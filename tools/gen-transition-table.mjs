@@ -27,19 +27,18 @@ const triggerMap = new Map([
 
 const entries = model.transitions
   .filter((t) => t.id && t.from && t.to && t.trigger)
-  .map((t) => `  {"${t.id}", ${stateMap.get(t.from)}, ${stateMap.get(t.to)}, ${triggerMap.get(t.trigger)} }`)
+  .map((t) => `  // @model transition:${t.id}:${t.trigger}\n  {"${t.id}", ${stateMap.get(t.from)}, ${stateMap.get(t.to)}, ${triggerMap.get(t.trigger)} }`)
   .join(',\n');
+const states = model.states.map((state) => `  // @model state:${state}\n  ${state}`).join(',\n');
 
 const header = `#pragma once
 #include <stdint.h>
+#include "../Progmem.h"
 
 namespace firmware {
 
 enum class BikeState : uint8_t {
-  Available,
-  Reserved,
-  InUse,
-  Maintenance
+${states}
 };
 
 enum class BikeTrigger : uint8_t {
@@ -60,7 +59,7 @@ struct TransitionEntry {
   BikeTrigger trigger;
 };
 
-inline constexpr TransitionEntry kBikeTransitions[] = {
+inline constexpr TransitionEntry kBikeTransitions[] FIRMWARE_PROGMEM = {
 ${entries}
 };
 

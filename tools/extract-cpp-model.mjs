@@ -1,36 +1,23 @@
-import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { extractTaggedElements, findSourceFiles, loadModel, sortObjectKeys } from './model-elements.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const firmwareRoot = path.join(root, 'firmware');
+const firmwareRoot = path.join(root, 'firmware', 'lib');
 const reportsDir = path.join(root, 'reports', 'extracted');
 await mkdir(reportsDir, { recursive: true });
 
-async function findCppFiles(dir) {
-  const entries = await readdir(dir, { withFileTypes: true });
-  const files = [];
-  for (const entry of entries) {
-    const current = path.join(dir, entry.name);
-    if (entry.isDirectory()) files.push(...await findCppFiles(current));
-    else if (entry.name.endsWith('.h') || entry.name.endsWith('.hpp') || entry.name.endsWith('.cpp')) files.push(current);
-  }
-  return files;
-}
-
-const matches = new Map();
-for (const file of await findCppFiles(firmwareRoot)) {
-  const text = await readFile(file, 'utf8');
-  const tags = [...text.matchAll(/\/\/\s*@model\s+([^\n]+)/g)].map((match) => match[1].trim());
-  if (tags.length > 0) {
-    matches.set(path.relative(root, file).split(path.sep).join('/'), tags);
-  }
-}
-
+const catalog = await loadModel(root);
+const files = await Promise.all((await findSourceFiles(firmwareRoot)).map(async (file) => ({
+  relativePath: path.relative(root, file).split(path.sep).join('/'),
+  source: await readFile(file, 'utf8'),
+})));
+const extracted = extractTaggedElements(files, catalog);
 const payload = {
-  generatedAt: null,
-  files: Object.fromEntries([...matches.entries()].sort()),
+  elements: extracted.elements,
+  files: extracted.tagsByFile,
 };
 
-await writeFile(path.join(reportsDir, 'cpp-model.json'), JSON.stringify(payload, null, 2) + '\n', 'utf8');
-console.log('Extracted model tags');
+await writeFile(path.join(reportsDir, 'cpp-model.json'), JSON.stringify(sortObjectKeys(payload), null, 2) + '\n', 'utf8');
+console.log(`Extracted ${extracted.elements.length} implemented model elements`);

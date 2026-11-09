@@ -1,8 +1,133 @@
 {
-  "total": 6,
-  "matched": 6,
-  "missing": [],
-  "extractedFiles": 6,
-  "gap_pct": 0,
-  "summary": "Deterministic verification against the canonical model source."
+  "breakdown": {
+    "classMembers": {
+      "gap_pct": 21.05,
+      "matched": 15,
+      "total": 19
+    },
+    "protocolFrames": {
+      "gap_pct": 0,
+      "matched": 17,
+      "total": 17
+    },
+    "relationships": {
+      "gap_pct": 100,
+      "matched": 0,
+      "total": 3
+    },
+    "sequenceMessages": {
+      "gap_pct": 88.24,
+      "matched": 2,
+      "total": 17
+    },
+    "states": {
+      "gap_pct": 0,
+      "matched": 4,
+      "total": 4
+    },
+    "transitions": {
+      "gap_pct": 0,
+      "matched": 10,
+      "total": 10
+    }
+  },
+  "extra": [
+    {
+      "category": "classMembers",
+      "id": "class:Pricing.operation:calculate"
+    }
+  ],
+  "gap_pct": 31.43,
+  "matched": 48,
+  "missing": [
+    {
+      "category": "classMembers",
+      "id": "class:Rental.attribute:cost"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Station.operation:dockBike"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Station.operation:releaseBike"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:User.operation:constructor"
+    },
+    {
+      "category": "relationships",
+      "id": "relationship:e1"
+    },
+    {
+      "category": "relationships",
+      "id": "relationship:e2"
+    },
+    {
+      "category": "relationships",
+      "id": "relationship:e3"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m1"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m2"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m3"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m4"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m5"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m6"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m7"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m1"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m2"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m3"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m4"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m5"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m6"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m7"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m8"
+    }
+  ],
+  "total": 70
 }

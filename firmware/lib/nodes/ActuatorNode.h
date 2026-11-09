@@ -4,6 +4,7 @@
 #include "../domain/StateMachine.h"
 #include "../hal/ILed.h"
 #include "../hal/ILink.h"
+#include "../protocol/generated/frame_ids.h"
 
 namespace firmware {
 
@@ -16,30 +17,48 @@ class ActuatorNode {
     if (bike_ == nullptr) {
       return false;
     }
+    if (link_ != nullptr) {
+      uint8_t id = 0;
+      uint8_t payload[15] = {};
+      while (link_->receive(&id, payload, sizeof(payload))) {
+        if (id == static_cast<uint8_t>(FrameId::RENT_REQUEST)) {
+          if (bike_->state == BikeState::Available) {
+            StateMachine::apply(bike_, BikeTrigger::Reserve);
+          }
+          StateMachine::apply(bike_, BikeTrigger::Unlock);
+        } else if (id == static_cast<uint8_t>(FrameId::RETURN_REQUEST)) {
+          StateMachine::apply(bike_, BikeTrigger::ReturnToStation);
+        }
+      }
+    }
+
+    if (bike_->state != BikeState::Maintenance) {
+      if (green_ != nullptr) green_->blink(false);
+      if (yellow_ != nullptr) yellow_->blink(false);
+      if (red_ != nullptr) red_->blink(false);
+    }
+
     switch (bike_->state) {
       case BikeState::Available:
         if (green_ != nullptr) green_->setColor(LedColor::Green);
-        if (yellow_ != nullptr) yellow_->blink(false);
-        if (red_ != nullptr) red_->blink(false);
+        if (yellow_ != nullptr) yellow_->setColor(LedColor::Green);
+        if (red_ != nullptr) red_->setColor(LedColor::Green);
         break;
       case BikeState::Reserved:
         if (yellow_ != nullptr) yellow_->setColor(LedColor::Yellow);
-        if (green_ != nullptr) green_->blink(false);
-        if (red_ != nullptr) red_->blink(false);
+        if (green_ != nullptr) green_->setColor(LedColor::Yellow);
+        if (red_ != nullptr) red_->setColor(LedColor::Yellow);
         break;
       case BikeState::InUse:
         if (red_ != nullptr) red_->setColor(LedColor::Red);
-        if (yellow_ != nullptr) yellow_->blink(false);
-        if (green_ != nullptr) green_->blink(false);
+        if (yellow_ != nullptr) yellow_->setColor(LedColor::Red);
+        if (green_ != nullptr) green_->setColor(LedColor::Red);
         break;
       case BikeState::Maintenance:
+        if (green_ != nullptr) green_->setColor(LedColor::Red);
+        if (yellow_ != nullptr) yellow_->setColor(LedColor::Red);
         if (red_ != nullptr) red_->blink(true);
         break;
-    }
-    if (link_ != nullptr) {
-      uint8_t id = 0x00U;
-      uint8_t payload[1] = {static_cast<uint8_t>(bike_->state)};
-      return link_->send(id, payload, 1U);
     }
     return true;
   }

@@ -1,53 +1,414 @@
 {
-  "generatedAt": null,
+  "elements": [
+    {
+      "category": "classMembers",
+      "id": "class:Bike.attribute:batteryLevel"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Bike.attribute:bikeId"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Bike.attribute:state"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Bike.operation:lock"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Bike.operation:unlock"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Pricing.operation:calculate"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Rental.attribute:endTime"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Rental.attribute:rentalId"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Rental.attribute:startTime"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Rental.operation:end"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Rental.operation:start"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Station.attribute:capacity"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Station.attribute:stationId"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:User.attribute:name"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:User.attribute:paymentMethod"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:User.attribute:userId"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:rent.active"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:rent.receipt"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:rent.request"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:rent.reserve"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:rent.reserved"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:rent.showReceipt"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:rent.started"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:rent.unlock"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:return.available"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:return.close"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:return.confirmPayment"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:return.docked"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:return.ended"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:return.lock"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:return.paymentRequest"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:return.receipt"
+    },
+    {
+      "category": "protocolFrames",
+      "id": "frame:return.request"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m0"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m0"
+    },
+    {
+      "category": "states",
+      "id": "state:Available"
+    },
+    {
+      "category": "states",
+      "id": "state:InUse"
+    },
+    {
+      "category": "states",
+      "id": "state:Maintenance"
+    },
+    {
+      "category": "states",
+      "id": "state:Reserved"
+    },
+    {
+      "category": "transitions",
+      "id": "transition:t0:initial"
+    },
+    {
+      "category": "transitions",
+      "id": "transition:t1:reserve()"
+    },
+    {
+      "category": "transitions",
+      "id": "transition:t2:cancel()"
+    },
+    {
+      "category": "transitions",
+      "id": "transition:t2:timeout"
+    },
+    {
+      "category": "transitions",
+      "id": "transition:t3:unlock()"
+    },
+    {
+      "category": "transitions",
+      "id": "transition:t4:unlock()"
+    },
+    {
+      "category": "transitions",
+      "id": "transition:t5:returnToStation()"
+    },
+    {
+      "category": "transitions",
+      "id": "transition:t6:reportFault()"
+    },
+    {
+      "category": "transitions",
+      "id": "transition:t7:batteryLow()"
+    },
+    {
+      "category": "transitions",
+      "id": "transition:t8:repaired()"
+    }
+  ],
   "files": {
     "firmware/lib/domain/Bike.h": [
-      "Bike",
-      "Bike.bikeId",
-      "Bike.batteryLevel",
-      "Bike.state",
-      "Bike.lock()",
-      "Bike.unlock()"
+      {
+        "id": "class:Bike.attribute:bikeId",
+        "tag": "Bike.bikeId"
+      },
+      {
+        "id": "class:Bike.attribute:batteryLevel",
+        "tag": "Bike.batteryLevel"
+      },
+      {
+        "id": "class:Bike.attribute:state",
+        "tag": "Bike.state"
+      },
+      {
+        "id": "transition:t0:initial",
+        "tag": "transition:t0:initial"
+      },
+      {
+        "id": "class:Bike.operation:lock",
+        "tag": "Bike.lock()"
+      },
+      {
+        "id": "class:Bike.operation:unlock",
+        "tag": "Bike.unlock()"
+      }
     ],
     "firmware/lib/domain/Pricing.h": [
-      "Pricing",
-      "Pricing.calculate()"
+      {
+        "id": "class:Pricing.operation:calculate",
+        "tag": "Pricing.calculate()"
+      }
     ],
     "firmware/lib/domain/Rental.h": [
-      "Rental",
-      "Rental.rentalId",
-      "Rental.startTime",
-      "Rental.endTime",
-      "Rental.cost",
-      "Rental.start()",
-      "Rental.end()"
-    ],
-    "firmware/lib/domain/StateMachine.h": [
-      "state:Available",
-      "state:Reserved",
-      "state:InUse",
-      "state:Maintenance",
-      "t1",
-      "t2",
-      "t3",
-      "t4",
-      "t5",
-      "t6",
-      "t7",
-      "t8"
+      {
+        "id": "class:Rental.attribute:rentalId",
+        "tag": "Rental.rentalId"
+      },
+      {
+        "id": "class:Rental.attribute:startTime",
+        "tag": "Rental.startTime"
+      },
+      {
+        "id": "class:Rental.attribute:endTime",
+        "tag": "Rental.endTime"
+      },
+      {
+        "id": "class:Rental.operation:start",
+        "tag": "Rental.start()"
+      },
+      {
+        "id": "class:Rental.operation:end",
+        "tag": "Rental.end()"
+      }
     ],
     "firmware/lib/domain/Station.h": [
-      "Station",
-      "Station.stationId",
-      "Station.capacity",
-      "Station.dockBike()",
-      "Station.releaseBike()"
+      {
+        "id": "class:Station.attribute:stationId",
+        "tag": "Station.stationId"
+      },
+      {
+        "id": "class:Station.attribute:capacity",
+        "tag": "Station.capacity"
+      }
     ],
     "firmware/lib/domain/User.h": [
-      "User",
-      "User.userId",
-      "User.name",
-      "User.paymentMethod"
+      {
+        "id": "class:User.attribute:userId",
+        "tag": "User.userId"
+      },
+      {
+        "id": "class:User.attribute:name",
+        "tag": "User.name"
+      },
+      {
+        "id": "class:User.attribute:paymentMethod",
+        "tag": "User.paymentMethod"
+      }
+    ],
+    "firmware/lib/domain/generated/transition_table.h": [
+      {
+        "id": "state:Available",
+        "tag": "state:Available"
+      },
+      {
+        "id": "state:Reserved",
+        "tag": "state:Reserved"
+      },
+      {
+        "id": "state:InUse",
+        "tag": "state:InUse"
+      },
+      {
+        "id": "state:Maintenance",
+        "tag": "state:Maintenance"
+      },
+      {
+        "id": "transition:t1:reserve()",
+        "tag": "transition:t1:reserve()"
+      },
+      {
+        "id": "transition:t2:timeout",
+        "tag": "transition:t2:timeout"
+      },
+      {
+        "id": "transition:t2:cancel()",
+        "tag": "transition:t2:cancel()"
+      },
+      {
+        "id": "transition:t3:unlock()",
+        "tag": "transition:t3:unlock()"
+      },
+      {
+        "id": "transition:t4:unlock()",
+        "tag": "transition:t4:unlock()"
+      },
+      {
+        "id": "transition:t5:returnToStation()",
+        "tag": "transition:t5:returnToStation()"
+      },
+      {
+        "id": "transition:t6:reportFault()",
+        "tag": "transition:t6:reportFault()"
+      },
+      {
+        "id": "transition:t7:batteryLow()",
+        "tag": "transition:t7:batteryLow()"
+      },
+      {
+        "id": "transition:t8:repaired()",
+        "tag": "transition:t8:repaired()"
+      }
+    ],
+    "firmware/lib/nodes/SensorNode.h": [
+      {
+        "id": "sequence:return:m0",
+        "tag": "sequence:return:m0"
+      },
+      {
+        "id": "sequence:rent:m0",
+        "tag": "sequence:rent:m0"
+      }
+    ],
+    "firmware/lib/protocol/generated/frame_ids.h": [
+      {
+        "id": "frame:rent.request",
+        "tag": "frame:rent.request"
+      },
+      {
+        "id": "frame:rent.reserve",
+        "tag": "frame:rent.reserve"
+      },
+      {
+        "id": "frame:rent.reserved",
+        "tag": "frame:rent.reserved"
+      },
+      {
+        "id": "frame:rent.unlock",
+        "tag": "frame:rent.unlock"
+      },
+      {
+        "id": "frame:rent.started",
+        "tag": "frame:rent.started"
+      },
+      {
+        "id": "frame:rent.active",
+        "tag": "frame:rent.active"
+      },
+      {
+        "id": "frame:rent.receipt",
+        "tag": "frame:rent.receipt"
+      },
+      {
+        "id": "frame:rent.showReceipt",
+        "tag": "frame:rent.showReceipt"
+      },
+      {
+        "id": "frame:return.request",
+        "tag": "frame:return.request"
+      },
+      {
+        "id": "frame:return.docked",
+        "tag": "frame:return.docked"
+      },
+      {
+        "id": "frame:return.paymentRequest",
+        "tag": "frame:return.paymentRequest"
+      },
+      {
+        "id": "frame:return.confirmPayment",
+        "tag": "frame:return.confirmPayment"
+      },
+      {
+        "id": "frame:return.lock",
+        "tag": "frame:return.lock"
+      },
+      {
+        "id": "frame:return.available",
+        "tag": "frame:return.available"
+      },
+      {
+        "id": "frame:return.receipt",
+        "tag": "frame:return.receipt"
+      },
+      {
+        "id": "frame:return.close",
+        "tag": "frame:return.close"
+      },
+      {
+        "id": "frame:return.ended",
+        "tag": "frame:return.ended"
+      }
     ]
   }
 }

@@ -1,13 +1,8 @@
 #pragma once
 
-namespace firmware {
+#include "generated/transition_table.h"
 
-enum class BikeState : unsigned char {
-  Available,
-  Reserved,
-  InUse,
-  Maintenance
-};
+namespace firmware {
 
 // @model Bike
 class Bike {
@@ -17,7 +12,8 @@ class Bike {
   // @model Bike.batteryLevel
   int batteryLevel;
   // @model Bike.state
-  BikeState state;
+  // @model transition:t0:initial
+  BikeState state = BikeState::Available;
 
   // @model Bike.lock()
   void lock() {

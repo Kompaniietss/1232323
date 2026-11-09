@@ -10,7 +10,6 @@ struct Rental {
   unsigned long startTime;
   // @model Rental.endTime
   unsigned long endTime;
-  // @model Rental.cost
   int costCents;
 
   // @model Rental.start()

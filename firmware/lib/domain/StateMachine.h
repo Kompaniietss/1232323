@@ -1,32 +1,27 @@
 #pragma once
 
 #include "Bike.h"
-#include "generated/transition_table.h"
+
+#include <stddef.h>
 
 namespace firmware {
 
-// @model state:Available
-// @model state:Reserved
-// @model state:InUse
-// @model state:Maintenance
-// @model t1
-// @model t2
-// @model t3
-// @model t4
-// @model t5
-// @model t6
-// @model t7
-// @model t8
 class StateMachine {
  public:
   static bool apply(Bike* bike, BikeTrigger trigger) {
     if (bike == nullptr) {
       return false;
     }
-    for (const TransitionEntry& entry : kBikeTransitions) {
-      if (entry.trigger == trigger) {
-        if (bike->state == entry.from) {
-          bike->state = entry.to;
+    for (size_t i = 0; i < sizeof(kBikeTransitions) / sizeof(kBikeTransitions[0]); ++i) {
+      const uint8_t* entry = reinterpret_cast<const uint8_t*>(&kBikeTransitions[i]);
+      const BikeTrigger entryTrigger = static_cast<BikeTrigger>(
+          FIRMWARE_READ_BYTE(entry + offsetof(TransitionEntry, trigger)));
+      if (entryTrigger == trigger) {
+        const BikeState from = static_cast<BikeState>(
+            FIRMWARE_READ_BYTE(entry + offsetof(TransitionEntry, from)));
+        if (bike->state == from) {
+          bike->state = static_cast<BikeState>(
+              FIRMWARE_READ_BYTE(entry + offsetof(TransitionEntry, to)));
           return true;
         }
       }

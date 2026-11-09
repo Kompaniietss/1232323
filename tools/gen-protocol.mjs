@@ -8,7 +8,7 @@ const outputDir = path.join(root, 'firmware', 'lib', 'protocol', 'generated');
 await mkdir(outputDir, { recursive: true });
 
 const entries = protocol.messages
-  .map((msg) => `  ${msg.name.replace(/\./g, '_').toUpperCase()} = ${msg.frameId},`)
+  .map((msg) => `  // @model frame:${msg.name}\n  ${msg.name.replace(/\./g, '_').toUpperCase()} = ${msg.frameId},`)
   .join('\n');
 
 const header = `#pragma once
