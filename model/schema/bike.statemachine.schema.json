@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Bike state machine model",
+  "type": "object",
+  "required": ["initial", "states", "transitions"],
+  "properties": {
+    "initial": {"type": "object"},
+    "states": {"type": "array", "items": {"type": "string"}},
+    "transitions": {"type": "array", "items": {"type": "object"}}
+  }
+}

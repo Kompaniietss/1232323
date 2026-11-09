@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sequence model",
+  "type": "object",
+  "additionalProperties": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "required": ["id", "from", "to", "message"],
+      "properties": {
+        "id": {"type": "string"},
+        "from": {"type": "string"},
+        "to": {"type": "string"},
+        "message": {"type": "string"}
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "frameFormat": "[0xA5][id][len][payload...][crc8]",
+  "startByte": "0xA5",
+  "crcPoly": "0x07",
+  "crcInit": "0x00",
+  "messages": [
+    {"name": "rent.request", "sequenceId": "m0", "frameId": 16},
+    {"name": "rent.reserve", "sequenceId": "m1", "frameId": 17},
+    {"name": "rent.reserved", "sequenceId": "m2", "frameId": 18},
+    {"name": "rent.unlock", "sequenceId": "m3", "frameId": 19},
+    {"name": "rent.started", "sequenceId": "m4", "frameId": 20},
+    {"name": "rent.active", "sequenceId": "m5", "frameId": 21},
+    {"name": "rent.receipt", "sequenceId": "m6", "frameId": 22},
+    {"name": "rent.showReceipt", "sequenceId": "m7", "frameId": 23},
+    {"name": "return.request", "sequenceId": "m0", "frameId": 32},
+    {"name": "return.docked", "sequenceId": "m1", "frameId": 33},
+    {"name": "return.paymentRequest", "sequenceId": "m2", "frameId": 34},
+    {"name": "return.confirmPayment", "sequenceId": "m3", "frameId": 35},
+    {"name": "return.lock", "sequenceId": "m4", "frameId": 36},
+    {"name": "return.available", "sequenceId": "m5", "frameId": 37},
+    {"name": "return.receipt", "sequenceId": "m6", "frameId": 38},
+    {"name": "return.close", "sequenceId": "m7", "frameId": 39},
+    {"name": "return.ended", "sequenceId": "m8", "frameId": 40}
+  ]
+}

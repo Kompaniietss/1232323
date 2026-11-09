@@ -1,0 +1,26 @@
+#pragma once
+#include <stdint.h>
+
+namespace firmware {
+
+enum class FrameId : uint8_t {
+  RENT_REQUEST = 16,
+  RENT_RESERVE = 17,
+  RENT_RESERVED = 18,
+  RENT_UNLOCK = 19,
+  RENT_STARTED = 20,
+  RENT_ACTIVE = 21,
+  RENT_RECEIPT = 22,
+  RENT_SHOWRECEIPT = 23,
+  RETURN_REQUEST = 32,
+  RETURN_DOCKED = 33,
+  RETURN_PAYMENTREQUEST = 34,
+  RETURN_CONFIRMPAYMENT = 35,
+  RETURN_LOCK = 36,
+  RETURN_AVAILABLE = 37,
+  RETURN_RECEIPT = 38,
+  RETURN_CLOSE = 39,
+  RETURN_ENDED = 40,
+};
+
+}  // namespace firmware

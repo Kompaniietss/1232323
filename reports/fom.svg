@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="320" viewBox="0 0 620 320">
+  <rect width="100%" height="100%" fill="#ffffff"/>
+  <g stroke="#111827" stroke-width="1">
+    <line x1="30" y1="280" x2="590" y2="280" />
+    <line x1="30" y1="30" x2="30" y2="280" />
+  </g>
+  <polyline fill="none" stroke="#2563eb" stroke-width="3" points="40,171.6 130,175.9 220,168.75" />
+  <text x="40" y="22" font-size="14" fill="#111827">Figure of Merit</text>
+</svg>

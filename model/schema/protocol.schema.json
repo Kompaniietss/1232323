@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Protocol model",
+  "type": "object",
+  "required": ["frameFormat", "startByte", "crcPoly", "crcInit", "messages"],
+  "properties": {
+    "frameFormat": {"type": "string"},
+    "startByte": {"type": "string"},
+    "crcPoly": {"type": "string"},
+    "crcInit": {"type": "string"},
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "sequenceId", "frameId"],
+        "properties": {
+          "name": {"type": "string"},
+          "sequenceId": {"type": "string"},
+          "frameId": {"type": "integer"}
+        }
+      }
+    }
+  }
+}

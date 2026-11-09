@@ -1,0 +1,8 @@
+{
+  "total": 6,
+  "matched": 6,
+  "missing": [],
+  "extractedFiles": 6,
+  "gap_pct": 0,
+  "summary": "Deterministic verification against the canonical model source."
+}

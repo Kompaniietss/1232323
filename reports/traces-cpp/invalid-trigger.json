@@ -1,0 +1,7 @@
+{
+  "scenario": "invalid-trigger",
+  "status": "error",
+  "detail": "Unsupported state-trigger pair remains unchanged.",
+  "source": "native-cpp-trace",
+  "matchedWithGolden": true
+}

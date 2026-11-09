@@ -1,0 +1,7 @@
+{
+  "scenario": "low-battery-rent-attempt",
+  "status": "blocked",
+  "detail": "Battery guard blocks rent when level <= 20.",
+  "source": "native-cpp-trace",
+  "matchedWithGolden": true
+}

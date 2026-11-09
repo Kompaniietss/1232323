@@ -1,0 +1,5 @@
+[wokwi]
+elf = ".pio/build/mega/firmware.elf"
+
+[diagram]
+file = "diagram.json"

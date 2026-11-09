@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pricing model",
+  "type": "object",
+  "required": ["currency", "unlockFeeCents", "pricePerStartedMinuteCents", "millisecondsPerMinute"],
+  "properties": {
+    "currency": {"type": "string"},
+    "unlockFeeCents": {"type": "integer", "minimum": 0},
+    "pricePerStartedMinuteCents": {"type": "integer", "minimum": 0},
+    "millisecondsPerMinute": {"type": "integer", "minimum": 1}
+  }
+}

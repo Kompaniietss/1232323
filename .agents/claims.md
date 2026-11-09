@@ -1,0 +1,5 @@
+# Shared work claims
+
+| Owner        | Claim                                                                  | Heavy task           | Status                                                                                                                                                                                                                         |
+| ------------ | ---------------------------------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Orchestrator | E-bike rental implementation, progress log, and final alignment/report | No active heavy task | Phases 5–7 implemented and tagged; Phase 8 remains open for native Safari verification; Phase 9 awaits authorization for remote deployment; a provisional local conformance report is prepared. No parallel agents are active. |

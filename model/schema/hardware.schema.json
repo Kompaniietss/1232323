@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Hardware model",
+  "type": "object",
+  "required": ["controller", "sensors", "actuators", "links"],
+  "properties": {
+    "controller": {"type": "object"},
+    "sensors": {"type": "array"},
+    "actuators": {"type": "array"},
+    "links": {"type": "array"}
+  }
+}

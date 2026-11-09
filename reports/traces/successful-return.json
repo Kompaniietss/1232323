@@ -1,0 +1,5 @@
+{
+  "scenario": "successful-return",
+  "status": "pass",
+  "detail": "Bike returned to station and locked."
+}

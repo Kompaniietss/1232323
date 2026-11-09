@@ -1,0 +1,20 @@
+{
+  "controller": {"model": "Arduino Mega 2560", "family": "atmelavr"},
+  "processor": {"flash": "256KB", "sram": "8KB"},
+  "sensors": [
+    {"id": "button", "kind": "push_button", "pin": 2, "pull": "GND", "debounceMs": 20}
+  ],
+  "actuators": [
+    {"id": "greenLed", "kind": "led", "pin": 5, "color": "green"},
+    {"id": "yellowLed", "kind": "led", "pin": 6, "color": "yellow"},
+    {"id": "redLed", "kind": "led", "pin": 7, "color": "red"}
+  ],
+  "links": [
+    {"id": "uart1", "role": "sensor->actuator", "tx": "Serial1", "rx": "Serial2"},
+    {"id": "uart2", "role": "actuator->sensor", "tx": "Serial2", "rx": "Serial1"}
+  ],
+  "notes": [
+    "The sensor and actuator share one firmware image but behave as two logical nodes separated by a real UART link.",
+    "The generated Wokwi diagram wires the button to GND and the LEDs with 220 ohm resistors."
+  ]
+}

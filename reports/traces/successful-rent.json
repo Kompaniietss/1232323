@@ -1,0 +1,5 @@
+{
+  "scenario": "successful-rent",
+  "status": "pass",
+  "detail": "Bike reserved and unlocked successfully."
+}

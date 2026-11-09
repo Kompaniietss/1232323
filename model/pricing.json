@@ -1,0 +1,7 @@
+{
+  "currency": "EUR",
+  "unlockFeeCents": 100,
+  "pricePerStartedMinuteCents": 15,
+  "millisecondsPerMinute": 60000,
+  "description": "Unlock fee plus per started minute charge, matching the reference TypeScript pricing logic."
+}

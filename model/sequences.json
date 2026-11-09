@@ -1,0 +1,23 @@
+{
+  "rent": [
+    {"id": "m0", "from": "User", "to": "Station", "message": "select bike"},
+    {"id": "m1", "from": "User", "to": "Bike", "message": "reserve()"},
+    {"id": "m2", "from": "Bike", "to": "User", "message": "reserved"},
+    {"id": "m3", "from": "User", "to": "Bike", "message": "unlock()"},
+    {"id": "m4", "from": "Bike", "to": "User", "message": "unlocked, ride started"},
+    {"id": "m5", "from": "Bike", "to": "Station", "message": "active rental"},
+    {"id": "m6", "from": "Station", "to": "User", "message": "cost + receipt"},
+    {"id": "m7", "from": "User", "to": "Station", "message": "show receipt"}
+  ],
+  "return": [
+    {"id": "m0", "from": "User", "to": "Bike", "message": "returnToStation()"},
+    {"id": "m1", "from": "Bike", "to": "Station", "message": "docked"},
+    {"id": "m2", "from": "Station", "to": "User", "message": "payment request"},
+    {"id": "m3", "from": "User", "to": "Station", "message": "confirm payment"},
+    {"id": "m4", "from": "Station", "to": "Bike", "message": "lock()"},
+    {"id": "m5", "from": "Bike", "to": "User", "message": "available"},
+    {"id": "m6", "from": "Station", "to": "User", "message": "receipt"},
+    {"id": "m7", "from": "User", "to": "Bike", "message": "close"},
+    {"id": "m8", "from": "Bike", "to": "User", "message": "ride ended"}
+  ]
+}

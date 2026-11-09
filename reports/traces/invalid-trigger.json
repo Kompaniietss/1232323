@@ -1,0 +1,5 @@
+{
+  "scenario": "invalid-trigger",
+  "status": "error",
+  "detail": "Unsupported state-trigger pair remains unchanged."
+}

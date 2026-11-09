@@ -1,0 +1,53 @@
+{
+  "generatedAt": null,
+  "files": {
+    "firmware/lib/domain/Bike.h": [
+      "Bike",
+      "Bike.bikeId",
+      "Bike.batteryLevel",
+      "Bike.state",
+      "Bike.lock()",
+      "Bike.unlock()"
+    ],
+    "firmware/lib/domain/Pricing.h": [
+      "Pricing",
+      "Pricing.calculate()"
+    ],
+    "firmware/lib/domain/Rental.h": [
+      "Rental",
+      "Rental.rentalId",
+      "Rental.startTime",
+      "Rental.endTime",
+      "Rental.cost",
+      "Rental.start()",
+      "Rental.end()"
+    ],
+    "firmware/lib/domain/StateMachine.h": [
+      "state:Available",
+      "state:Reserved",
+      "state:InUse",
+      "state:Maintenance",
+      "t1",
+      "t2",
+      "t3",
+      "t4",
+      "t5",
+      "t6",
+      "t7",
+      "t8"
+    ],
+    "firmware/lib/domain/Station.h": [
+      "Station",
+      "Station.stationId",
+      "Station.capacity",
+      "Station.dockBike()",
+      "Station.releaseBike()"
+    ],
+    "firmware/lib/domain/User.h": [
+      "User",
+      "User.userId",
+      "User.name",
+      "User.paymentMethod"
+    ]
+  }
+}

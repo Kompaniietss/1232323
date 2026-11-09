@@ -1,0 +1,7 @@
+{
+  "scenario": "reservation-timeout",
+  "status": "pass",
+  "detail": "Reservation expires after 10 minutes.",
+  "source": "native-cpp-trace",
+  "matchedWithGolden": true
+}

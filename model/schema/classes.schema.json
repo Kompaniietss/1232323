@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Classes model",
+  "type": "object",
+  "required": ["classes", "relationships"],
+  "properties": {
+    "classes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "attributes", "operations"],
+        "properties": {
+          "name": {"type": "string"},
+          "attributes": {"type": "array"},
+          "operations": {"type": "array"}
+        }
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {"type": "object"}
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "classes": [
+    {
+      "name": "User",
+      "attributes": [
+        {"name": "userId", "type": "string"},
+        {"name": "name", "type": "string"},
+        {"name": "paymentMethod", "type": "string"}
+      ],
+      "operations": [
+        {"name": "constructor", "signature": "User(userId: string, name: string, paymentMethod: string)"}
+      ]
+    },
+    {
+      "name": "Rental",
+      "attributes": [
+        {"name": "rentalId", "type": "string"},
+        {"name": "startTime", "type": "DateTime"},
+        {"name": "endTime", "type": "DateTime"},
+        {"name": "cost", "type": "number"}
+      ],
+      "operations": [
+        {"name": "start", "signature": "start(): void"},
+        {"name": "end", "signature": "end(): void"}
+      ]
+    },
+    {
+      "name": "Station",
+      "attributes": [
+        {"name": "stationId", "type": "string"},
+        {"name": "capacity", "type": "int"}
+      ],
+      "operations": [
+        {"name": "dockBike", "signature": "dockBike(bike: Bike): void"},
+        {"name": "releaseBike", "signature": "releaseBike(): Bike"}
+      ]
+    },
+    {
+      "name": "Bike",
+      "attributes": [
+        {"name": "bikeId", "type": "string"},
+        {"name": "batteryLevel", "type": "int"},
+        {"name": "state", "type": "BikeState"}
+      ],
+      "operations": [
+        {"name": "lock", "signature": "lock(): void"},
+        {"name": "unlock", "signature": "unlock(): void"}
+      ]
+    }
+  ],
+  "relationships": [
+    {"id": "e1", "source": "User", "target": "Rental", "label": "makes", "kind": "association"},
+    {"id": "e2", "source": "Rental", "target": "Bike", "label": "uses", "kind": "association"},
+    {"id": "e3", "source": "Station", "target": "Bike", "label": "holds", "kind": "aggregation"}
+  ]
+}

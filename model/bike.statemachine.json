@@ -1,0 +1,15 @@
+{
+  "initial": {"id": "t0", "from": "Initial", "to": "Available"},
+  "states": ["Available", "Reserved", "InUse", "Maintenance"],
+  "transitions": [
+    {"id": "t1", "from": "Available", "to": "Reserved", "trigger": "reserve()"},
+    {"id": "t2", "from": "Reserved", "to": "Available", "trigger": "timeout", "detail": "after 10 minutes"},
+    {"id": "t2", "from": "Reserved", "to": "Available", "trigger": "cancel()"},
+    {"id": "t3", "from": "Reserved", "to": "InUse", "trigger": "unlock()"},
+    {"id": "t4", "from": "Available", "to": "InUse", "trigger": "unlock()"},
+    {"id": "t5", "from": "InUse", "to": "Available", "trigger": "returnToStation()"},
+    {"id": "t6", "from": "InUse", "to": "Maintenance", "trigger": "reportFault()"},
+    {"id": "t7", "from": "Available", "to": "Maintenance", "trigger": "batteryLow()", "guard": "batteryLevel <= 20"},
+    {"id": "t8", "from": "Maintenance", "to": "Available", "trigger": "repaired()"}
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "scenario": "successful-rent",
+  "status": "pass",
+  "detail": "Bike reserved and unlocked successfully.",
+  "source": "native-cpp-trace",
+  "matchedWithGolden": true
+}
