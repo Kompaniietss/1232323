@@ -1,6 +1,6 @@
 #include <unity.h>
 
-#include "../lib/domain/Pricing.h"
+#include "../../lib/domain/Pricing.h"
 
 void test_unlock_fee_only(void) {
   TEST_ASSERT_EQUAL_INT(100, firmware::Pricing::calculate(0UL));

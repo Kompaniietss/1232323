@@ -1,7 +1,7 @@
 #include <unity.h>
 
-#include "../lib/domain/Bike.h"
-#include "../lib/domain/StateMachine.h"
+#include "../../lib/domain/Bike.h"
+#include "../../lib/domain/StateMachine.h"
 
 void test_t1_transition(void) {
   firmware::Bike bike{"bike-1", 100, firmware::BikeState::Available};

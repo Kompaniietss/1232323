@@ -1,7 +1,7 @@
 #include <unity.h>
 
-#include "../lib/protocol/Crc8.h"
-#include "../lib/protocol/FrameCodec.h"
+#include "../../lib/protocol/Crc8.h"
+#include "../../lib/protocol/FrameCodec.h"
 
 void test_crc_roundtrip(void) {
   const uint8_t payload[] = {0x01U, 0x02U, 0x03U};

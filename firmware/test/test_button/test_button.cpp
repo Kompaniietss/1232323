@@ -1,6 +1,6 @@
 #include <unity.h>
 
-#include "../lib/hal/fake/FakeButton.h"
+#include "../../lib/hal/fake/FakeButton.h"
 
 void test_debounce_passthrough(void) {
   firmware::FakeButton button(true);
