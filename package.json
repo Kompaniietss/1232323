@@ -17,7 +17,10 @@
     "diagrams:generate": "node scripts/generate-diagrams.mjs",
     "diagrams:check": "node scripts/generate-diagrams.mjs --check",
     "iot:generate": "node tools/gen-transition-table.mjs && node tools/gen-protocol.mjs && node tools/gen-wokwi-diagram.mjs && node tools/gen-golden-traces.mjs",
-    "iot:check": "node tools/extract-cpp-model.mjs && node tools/verify-model.mjs"
+    "iot:check": "node tools/extract-cpp-model.mjs && node tools/verify-model.mjs",
+    "model:verify": "node tools/extract-cpp-model.mjs && node tools/verify-model.mjs",
+    "fom:log": "node tools/fom-log.ts",
+    "fom:plot": "node tools/fom-plot.ts"
   },
   "dependencies": {
     "react": "19.1.1",

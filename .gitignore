@@ -5,9 +5,4 @@ coverage/
 *.tsbuildinfo
 playwright-report/
 test-results/
-
-firmware/.pio/
-
-firmware/.pio/
-
 firmware/.pio/
