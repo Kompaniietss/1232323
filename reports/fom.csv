@@ -1,0 +1,3 @@
+commit,date,mega_build_ok,gap_pct,tests_pass,tests_total,trace_diffs,flash_bytes,ram_bytes,transition_us,notes
+4a36559,2026-11-09,0,78.57,,,,,,,baseline: Initial commit; enum BikeState defined twice; gap measured by running the new verifier on that tree in a git worktree
+fea87d7,2026-11-10,1,31.43,,,,6236,731,,
