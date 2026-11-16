@@ -3,6 +3,8 @@
   "startByte": "0xA5",
   "crcPoly": "0x07",
   "crcInit": "0x00",
+  "crcCoverage": "id,len,payload",
+  "maxPayloadBytes": 15,
   "messages": [
     {"name": "rent.request", "sequenceId": "m0", "frameId": 16},
     {"name": "rent.reserve", "sequenceId": "m1", "frameId": 17},
