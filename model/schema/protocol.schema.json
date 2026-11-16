@@ -8,6 +8,8 @@
     "startByte": {"type": "string"},
     "crcPoly": {"type": "string"},
     "crcInit": {"type": "string"},
+    "crcCoverage": {"type": "string"},
+    "maxPayloadBytes": {"type": "integer"},
     "messages": {
       "type": "array",
       "items": {
