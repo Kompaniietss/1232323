@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const reportsDir = path.join(root, 'reports');
 const csvPath = path.join(reportsDir, 'fom.csv');
+const wokwiBenchmarkPath = path.join(reportsDir, 'bench-wokwi.txt');
 const columns = [
   'commit',
   'date',
@@ -140,10 +141,13 @@ function checkCleanWorkingTree(): void {
     }
   }
 
-  const outsideReports = changedPaths.filter((filePath) => !/^reports[\\/]+fom\.[^\\/]+$/.test(filePath));
+  const allowedReportFiles = /^reports[\\/]+(?:fom\.[^\\/]+|bench-wokwi\.txt)$/;
+  const outsideReports = changedPaths.filter(
+    (filePath) => !allowedReportFiles.test(filePath),
+  );
   if (outsideReports.length > 0) {
     throw new Error(
-      `Refusing to record FOM for an uncommitted checkout. Commit or stash changes outside reports/fom.* first:\n${outsideReports.map((filePath) => `  ${filePath}`).join('\n')}`,
+      `Refusing to record FOM for an uncommitted checkout. Commit or stash changes outside reports/fom.* and reports/bench-wokwi.txt first:\n${outsideReports.map((filePath) => `  ${filePath}`).join('\n')}`,
     );
   }
 }
@@ -302,6 +306,43 @@ function isMissingFile(error: unknown): boolean {
   return typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT';
 }
 
+function parseWokwiTransitionTime(text: string): string {
+  let transitionUs: string | undefined;
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.startsWith('BENCH transition_us=')) continue;
+    const match = /^BENCH transition_us=(\d+(?:\.\d+)?) n=1000$/.exec(line);
+    if (!match || !Number.isFinite(Number(match[1]))) {
+      throw new Error('reports/bench-wokwi.txt has an invalid transition benchmark line');
+    }
+    if (transitionUs !== undefined) {
+      throw new Error(
+        'reports/bench-wokwi.txt contains multiple transition benchmark lines',
+      );
+    }
+    transitionUs = match[1]!;
+  }
+  if (transitionUs === undefined) {
+    throw new Error(
+      'reports/bench-wokwi.txt does not contain a transition benchmark line',
+    );
+  }
+  return transitionUs;
+}
+
+async function loadWokwiBenchmark(): Promise<{ transitionUs: string; note: string }> {
+  let text: string;
+  try {
+    text = await readFile(wokwiBenchmarkPath, 'utf8');
+  } catch (error) {
+    if (isMissingFile(error)) return { transitionUs: '', note: '' };
+    throw error;
+  }
+  return {
+    transitionUs: parseWokwiTransitionTime(text),
+    note: 'bench: Wokwi simulator',
+  };
+}
+
 function isMissingCommandError(error: Error | undefined): boolean {
   return error !== undefined && 'code' in error && error.code === 'ENOENT';
 }
@@ -368,11 +409,13 @@ async function recordCurrentCheckout(): Promise<void> {
 
   const traceResults = runTraceComparison();
   if (traceResults.note) console.error(traceResults.note);
+  const benchmark = await loadWokwiBenchmark();
 
   const buildOk = build.status === 0;
   const notes = [
     testResults.total > 0 ? '' : `Native tests not counted: ${testFailureReason(testRun)}`,
     traceResults.note,
+    benchmark.note,
   ].filter(Boolean).join('; ');
   const row = [
     commit,
@@ -384,7 +427,7 @@ async function recordCurrentCheckout(): Promise<void> {
     traceResults.traceDiffs,
     buildOk ? parseBuildMemory(build.output, 'Flash') : '',
     buildOk ? parseBuildMemory(build.output, 'RAM') : '',
-    '',
+    benchmark.transitionUs,
     notes,
   ];
 

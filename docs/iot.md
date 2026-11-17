@@ -46,3 +46,20 @@ The extractor validates the tag against a real signature, enum member, state nam
 ## Validation
 
 Core validation is built around JSON model checks, generated files, and deterministic extraction comparisons. The repository still runs the original TypeScript checks that validate the web app and the UML-generated diagrams.
+
+## Firmware benchmarks in Wokwi
+
+Build the isolated benchmark firmware from the `firmware/` directory:
+
+```sh
+pio run -e bench
+```
+
+In `firmware/wokwi.toml`, temporarily point both `firmware` and `elf` at
+`.pio/build/bench/firmware.hex` and `.pio/build/bench/firmware.elf`. Start the
+Wokwi simulation and save the terminal text, including the `BENCH` lines, as
+`reports/bench-wokwi.txt` at the repository root. The FOM logger reads the
+`transition_us` value from that raw output and records the note
+`bench: Wokwi simulator`. If the file is absent, the benchmark cell stays
+empty; no timing values are synthesized. Restore the `wokwi.toml` paths to the
+Mega build when finished.
