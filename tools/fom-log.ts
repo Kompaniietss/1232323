@@ -155,9 +155,11 @@ function parseBuildMemory(output: string, label: 'RAM' | 'Flash'): string {
   return match?.[1] ?? '';
 }
 
-function runBuild(): { status: number | null; output: string; error?: Error } {
+type CommandResult = { status: number | null; output: string; error?: Error };
+
+function runPlatformio(args: string[]): CommandResult {
   const firmwareDir = path.join(root, 'firmware');
-  const pio = run('pio', ['run', '-e', 'mega'], firmwareDir);
+  const pio = run('pio', args, firmwareDir);
   if (!isMissingCommandError(pio.error)) {
     return {
       status: pio.status,
@@ -166,12 +168,50 @@ function runBuild(): { status: number | null; output: string; error?: Error } {
     };
   }
 
-  const py = run('py', ['-m', 'platformio', 'run', '-e', 'mega'], firmwareDir);
+  const py = run('py', ['-m', 'platformio', ...args], firmwareDir);
   return {
     status: py.status,
     output: `${py.stdout ?? ''}\n${py.stderr ?? ''}`,
     error: py.error,
   };
+}
+
+function runBuild(): CommandResult {
+  return runPlatformio(['run', '-e', 'mega']);
+}
+
+function countUnityResults(output: string): { passed: number; total: number } {
+  const ansiEscape = String.fromCharCode(27);
+  const cleanOutput = output.replace(new RegExp(`${ansiEscape}\\[[0-9;]*m`, 'g'), '');
+  const caseResult = /^.+:\d+:\s+.+\[(PASSED|FAILED)\]\s*$/;
+  let passed = 0;
+  let total = 0;
+
+  for (const line of cleanOutput.split(/\r?\n/)) {
+    const match = caseResult.exec(line);
+    if (!match) continue;
+    total += 1;
+    if (match[1] === 'PASSED') passed += 1;
+  }
+
+  return { passed, total };
+}
+
+function testFailureReason(testRun: CommandResult): string {
+  if (testRun.error) return testRun.error.message;
+
+  const ansiEscape = String.fromCharCode(27);
+  const lines = testRun.output
+    .replace(new RegExp(`${ansiEscape}\\[[0-9;]*m`, 'g'), '')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const diagnostic = lines.find((line) =>
+    /(?:g\+\+|compiler).*(?:not found|not recognized|no such file|cannot find|missing)|(?:not found|not recognized|no such file|cannot find|missing).*(?:g\+\+|compiler)/i.test(line),
+  ) ?? lines.find((line) => /error|failed|not found|not recognized/i.test(line));
+  if (diagnostic) return diagnostic;
+  if (testRun.status !== 0) return `pio test exited with status ${testRun.status ?? 'unknown'} before any test cases ran`;
+  return 'pio test produced no Unity test-case result lines';
 }
 
 async function loadExistingRows(): Promise<CsvRow[]> {
@@ -262,19 +302,24 @@ async function recordCurrentCheckout(): Promise<void> {
   if (build.error) console.error(`PlatformIO could not run: ${build.error.message}`);
   if (build.status !== 0) console.error(build.output.trim() || 'PlatformIO build failed without output');
 
+  const testRun = runPlatformio(['test', '-e', 'native']);
+  const testResults = countUnityResults(testRun.output);
+  if (testRun.error) console.error(`PlatformIO native tests could not run: ${testRun.error.message}`);
+  if (testRun.status !== 0) console.error(testRun.output.trim() || 'PlatformIO native tests failed without output');
+
   const buildOk = build.status === 0;
   const row = [
     commit,
     dateMatch[1]!,
     buildOk ? '1' : '0',
     String(verification.gap_pct),
-    '',
-    '',
+    testResults.total > 0 ? String(testResults.passed) : '',
+    testResults.total > 0 ? String(testResults.total) : '',
     '',
     buildOk ? parseBuildMemory(build.output, 'Flash') : '',
     buildOk ? parseBuildMemory(build.output, 'RAM') : '',
     '',
-    '',
+    testResults.total > 0 ? '' : `Native tests not counted: ${testFailureReason(testRun)}`,
   ];
 
   const rows = await loadExistingRows();
