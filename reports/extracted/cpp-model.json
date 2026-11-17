@@ -26,6 +26,10 @@
     },
     {
       "category": "classMembers",
+      "id": "class:Rental.attribute:cost"
+    },
+    {
+      "category": "classMembers",
       "id": "class:Rental.attribute:endTime"
     },
     {
@@ -51,6 +55,14 @@
     {
       "category": "classMembers",
       "id": "class:Station.attribute:stationId"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Station.operation:dockBike"
+    },
+    {
+      "category": "classMembers",
+      "id": "class:Station.operation:releaseBike"
     },
     {
       "category": "classMembers",
@@ -131,6 +143,10 @@
     {
       "category": "protocolFrames",
       "id": "frame:return.request"
+    },
+    {
+      "category": "relationships",
+      "id": "relationship:e3"
     },
     {
       "category": "sequenceMessages",
@@ -244,6 +260,10 @@
         "tag": "Rental.endTime"
       },
       {
+        "id": "class:Rental.attribute:cost",
+        "tag": "Rental.cost"
+      },
+      {
         "id": "class:Rental.operation:start",
         "tag": "Rental.start()"
       },
@@ -260,6 +280,18 @@
       {
         "id": "class:Station.attribute:capacity",
         "tag": "Station.capacity"
+      },
+      {
+        "id": "relationship:e3",
+        "tag": "relationship:e3"
+      },
+      {
+        "id": "class:Station.operation:dockBike",
+        "tag": "Station.dockBike()"
+      },
+      {
+        "id": "class:Station.operation:releaseBike",
+        "tag": "Station.releaseBike()"
       }
     ],
     "firmware/lib/domain/User.h": [

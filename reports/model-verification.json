@@ -1,9 +1,9 @@
 {
   "breakdown": {
     "classMembers": {
-      "gap_pct": 21.05,
-      "matched": 15,
-      "total": 19
+      "gap_pct": 0,
+      "matched": 18,
+      "total": 18
     },
     "protocolFrames": {
       "gap_pct": 0,
@@ -11,8 +11,8 @@
       "total": 17
     },
     "relationships": {
-      "gap_pct": 100,
-      "matched": 0,
+      "gap_pct": 66.67,
+      "matched": 1,
       "total": 3
     },
     "sequenceMessages": {
@@ -37,25 +37,9 @@
       "id": "class:Pricing.operation:calculate"
     }
   ],
-  "gap_pct": 31.43,
-  "matched": 48,
+  "gap_pct": 24.64,
+  "matched": 52,
   "missing": [
-    {
-      "category": "classMembers",
-      "id": "class:Rental.attribute:cost"
-    },
-    {
-      "category": "classMembers",
-      "id": "class:Station.operation:dockBike"
-    },
-    {
-      "category": "classMembers",
-      "id": "class:Station.operation:releaseBike"
-    },
-    {
-      "category": "classMembers",
-      "id": "class:User.operation:constructor"
-    },
     {
       "category": "relationships",
       "id": "relationship:e1"
@@ -63,10 +47,6 @@
     {
       "category": "relationships",
       "id": "relationship:e2"
-    },
-    {
-      "category": "relationships",
-      "id": "relationship:e3"
     },
     {
       "category": "sequenceMessages",
@@ -129,5 +109,5 @@
       "id": "sequence:return:m8"
     }
   ],
-  "total": 70
+  "total": 69
 }

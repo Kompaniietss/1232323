@@ -17,7 +17,16 @@ npm run diagrams:check
 npm run build
 ```
 
+For the Arduino Mega firmware, run from `firmware/`:
+
+```sh
+pio test -e native
+pio run -e mega
+```
+
 `npm test` runs Vitest unit/integration tests and reports source coverage.
+`pio test -e native` runs the Unity suites for firmware domain and protocol
+code; `pio run -e mega` compiles the reference Arduino Mega firmware.
 `npm run test:e2e` runs Playwright tests on Chromium, Microsoft Edge (Windows
 only), Firefox, and WebKit. On macOS with Safari WebDriver enabled,
 `npm run test:safari` runs the rent, return, receipt, and reload-reset smoke
