@@ -1,147 +1,31 @@
 {
   "version": 1,
+  "author": "iot",
   "editor": "wokwi",
-  "layout": {
-    "width": 1200,
-    "height": 700
-  },
   "parts": [
-    {
-      "type": "board-mega",
-      "id": "mega",
-      "x": 400,
-      "y": 220
-    },
-    {
-      "type": "pushbutton",
-      "id": "button",
-      "x": 180,
-      "y": 420,
-      "label": "Button",
-      "value": "2"
-    },
-    {
-      "type": "led",
-      "id": "greenLed",
-      "x": 630,
-      "y": 180,
-      "color": "green",
-      "label": "Available"
-    },
-    {
-      "type": "led",
-      "id": "yellowLed",
-      "x": 690,
-      "y": 180,
-      "color": "yellow",
-      "label": "Reserved"
-    },
-    {
-      "type": "led",
-      "id": "redLed",
-      "x": 750,
-      "y": 180,
-      "color": "red",
-      "label": "Rented"
-    }
+    { "type": "wokwi-arduino-mega", "id": "mega", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-pushbutton", "id": "btn1", "top": -130, "left": 20, "attrs": { "color": "blue" } },
+    { "type": "wokwi-led", "id": "ledG", "top": -140, "left": 150, "attrs": { "color": "limegreen" } },
+    { "type": "wokwi-led", "id": "ledY", "top": -140, "left": 220, "attrs": { "color": "yellow" } },
+    { "type": "wokwi-led", "id": "ledR", "top": -140, "left": 290, "attrs": { "color": "red" } },
+    { "type": "wokwi-resistor", "id": "rG", "top": -75, "left": 120, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "rY", "top": -75, "left": 190, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "rR", "top": -75, "left": 260, "rotate": 90, "attrs": { "value": "220" } }
   ],
-  "wires": [
-    {
-      "from": "button:1",
-      "to": "mega:2"
-    },
-    {
-      "from": "button:2",
-      "to": "mega:GND"
-    },
-    {
-      "from": "greenLed:anode",
-      "to": "mega:5"
-    },
-    {
-      "from": "greenLed:cathode",
-      "to": "mega:GND"
-    },
-    {
-      "from": "yellowLed:anode",
-      "to": "mega:6"
-    },
-    {
-      "from": "yellowLed:cathode",
-      "to": "mega:GND"
-    },
-    {
-      "from": "redLed:anode",
-      "to": "mega:7"
-    },
-    {
-      "from": "redLed:cathode",
-      "to": "mega:GND"
-    },
-    {
-      "from": "mega:18",
-      "to": "mega:17"
-    },
-    {
-      "from": "mega:16",
-      "to": "mega:19"
-    }
+  "connections": [
+    ["mega:2", "btn1:1.l", "blue", []],
+    ["btn1:2.l", "mega:GND.1", "black", []],
+    ["mega:5", "rG:1", "green", []],
+    ["rG:2", "ledG:A", "green", []],
+    ["ledG:C", "mega:GND.1", "black", []],
+    ["mega:6", "rY:1", "yellow", []],
+    ["rY:2", "ledY:A", "yellow", []],
+    ["ledY:C", "mega:GND.1", "black", []],
+    ["mega:7", "rR:1", "red", []],
+    ["rR:2", "ledR:A", "red", []],
+    ["ledR:C", "mega:GND.1", "black", []],
+    ["mega:18", "mega:17", "orange", []],
+    ["mega:16", "mega:19", "purple", []]
   ],
-  "metadata": {
-    "controller": {
-      "model": "Arduino Mega 2560",
-      "family": "atmelavr"
-    },
-    "processor": {
-      "flash": "256KB",
-      "sram": "8KB"
-    },
-    "sensors": [
-      {
-        "id": "button",
-        "kind": "push_button",
-        "pin": 2,
-        "pull": "GND",
-        "debounceMs": 20
-      }
-    ],
-    "actuators": [
-      {
-        "id": "greenLed",
-        "kind": "led",
-        "pin": 5,
-        "color": "green"
-      },
-      {
-        "id": "yellowLed",
-        "kind": "led",
-        "pin": 6,
-        "color": "yellow"
-      },
-      {
-        "id": "redLed",
-        "kind": "led",
-        "pin": 7,
-        "color": "red"
-      }
-    ],
-    "links": [
-      {
-        "id": "uart1",
-        "role": "sensor->actuator",
-        "tx": "Serial1",
-        "rx": "Serial2"
-      },
-      {
-        "id": "uart2",
-        "role": "actuator->sensor",
-        "tx": "Serial2",
-        "rx": "Serial1"
-      }
-    ],
-    "notes": [
-      "The sensor and actuator share one firmware image but behave as two logical nodes separated by a real UART link.",
-      "The generated Wokwi diagram wires the button to GND and the LEDs with 220 ohm resistors."
-    ]
-  }
+  "dependencies": {}
 }
