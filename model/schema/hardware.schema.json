@@ -2,11 +2,57 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Hardware model",
   "type": "object",
-  "required": ["controller", "sensors", "actuators", "links"],
+  "required": ["controller", "sensors", "actuators", "links", "wokwi"],
   "properties": {
     "controller": {"type": "object"},
     "sensors": {"type": "array"},
     "actuators": {"type": "array"},
-    "links": {"type": "array"}
+    "links": {"type": "array"},
+    "wokwi": {
+      "type": "object",
+      "required": ["version", "author", "editor", "parts", "connections", "dependencies"],
+      "properties": {
+        "version": {"type": "integer"},
+        "author": {"type": "string"},
+        "editor": {"const": "wokwi"},
+        "parts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["type", "id", "top", "left", "attrs"],
+            "properties": {
+              "type": {
+                "enum": [
+                  "wokwi-arduino-mega",
+                  "wokwi-pushbutton",
+                  "wokwi-led",
+                  "wokwi-resistor"
+                ]
+              },
+              "id": {"type": "string"},
+              "top": {"type": "number"},
+              "left": {"type": "number"},
+              "rotate": {"type": "integer"},
+              "attrs": {"type": "object"}
+            }
+          }
+        },
+        "connections": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {"type": "string"},
+              {"type": "string"},
+              {"type": "string"},
+              {"type": "array", "items": {"type": "string"}}
+            ],
+            "minItems": 4,
+            "maxItems": 4
+          }
+        },
+        "dependencies": {"type": "object"}
+      }
+    }
   }
 }

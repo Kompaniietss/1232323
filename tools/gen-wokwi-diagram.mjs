@@ -1,40 +1,63 @@
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
+import { log } from 'node:console';
 import path from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const hardware = JSON.parse(await readFile(path.join(root, 'model', 'hardware.json'), 'utf8'));
 const outputPath = path.join(root, 'firmware', 'diagram.json');
-await mkdir(path.dirname(outputPath), { recursive: true });
+const checkOnly = process.argv.includes('--check');
 
-const diagram = {
-  version: 1,
-  editor: 'wokwi',
-  layout: {
-    width: 1200,
-    height: 700,
-  },
-  parts: [
-    { type: 'board-mega', id: 'mega', x: 400, y: 220 },
-    { type: 'pushbutton', id: 'button', x: 180, y: 420, label: 'Button', value: '2' },
-    { type: 'led', id: 'greenLed', x: 630, y: 180, color: 'green', label: 'Available' },
-    { type: 'led', id: 'yellowLed', x: 690, y: 180, color: 'yellow', label: 'Reserved' },
-    { type: 'led', id: 'redLed', x: 750, y: 180, color: 'red', label: 'Rented' },
-  ],
-  wires: [
-    { from: 'button:1', to: 'mega:2' },
-    { from: 'button:2', to: 'mega:GND' },
-    { from: 'greenLed:anode', to: 'mega:5' },
-    { from: 'greenLed:cathode', to: 'mega:GND' },
-    { from: 'yellowLed:anode', to: 'mega:6' },
-    { from: 'yellowLed:cathode', to: 'mega:GND' },
-    { from: 'redLed:anode', to: 'mega:7' },
-    { from: 'redLed:cathode', to: 'mega:GND' },
-    { from: 'mega:18', to: 'mega:17' },
-    { from: 'mega:16', to: 'mega:19' },
-  ],
-  metadata: hardware,
-};
+function stringifyCompact(value) {
+  let inString = false;
+  let escaped = false;
+  let result = '';
+  const json = JSON.stringify(value);
 
-await writeFile(outputPath, JSON.stringify(diagram, null, 2) + '\n', 'utf8');
-console.log('Generated Wokwi diagram');
+  for (let index = 0; index < json.length; index += 1) {
+    const character = json[index];
+    if (!inString && character === '{' && json[index + 1] !== '}') {
+      result += '{ ';
+      continue;
+    }
+    if (!inString && character === '}' && json[index - 1] !== '{') {
+      result += ' }';
+      continue;
+    }
+    result += character;
+    if (escaped) {
+      escaped = false;
+    } else if (character === '\\' && inString) {
+      escaped = true;
+    } else if (character === '"') {
+      inString = !inString;
+    } else if (!inString && (character === ',' || character === ':')) {
+      result += ' ';
+    }
+  }
+
+  return result;
+}
+
+const diagram = Object.entries(hardware.wokwi)
+  .map(([key, value]) => {
+    const serializedValue =
+      key === 'parts' || key === 'connections'
+        ? `[\n${value.map((entry) => `    ${stringifyCompact(entry)}`).join(',\n')}\n  ]`
+        : stringifyCompact(value);
+    return `  ${JSON.stringify(key)}: ${serializedValue}`;
+  })
+  .join(',\n');
+const contents = `{\n${diagram}\n}`;
+
+if (checkOnly) {
+  const existing = await readFile(outputPath, 'utf8');
+  if (existing !== contents) {
+    throw new Error('firmware/diagram.json is out of date; run npm run wokwi:generate.');
+  }
+  log('Generated Wokwi diagram matches model/hardware.json.');
+} else {
+  await writeFile(outputPath, contents, 'utf8');
+  log('Generated firmware/diagram.json from model/hardware.json.');
+}
