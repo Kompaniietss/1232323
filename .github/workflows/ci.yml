@@ -51,5 +51,7 @@ jobs:
         run: npm run test:e2e
       - name: Check generated diagrams
         run: npm run diagrams:check
+      - name: Check generated Wokwi diagram
+        run: npm run wokwi:check
       - name: Build static site
         run: npm run build
