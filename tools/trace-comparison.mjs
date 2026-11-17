@@ -26,7 +26,7 @@ export function validateTrace(trace, scenarioName) {
         !['Available', 'Reserved', 'InUse', 'Maintenance'].includes(step.stateBefore) ||
         !['Available', 'Reserved', 'InUse', 'Maintenance'].includes(step.stateAfter) ||
         !(step.frameId === null || (Number.isInteger(step.frameId) && step.frameId >= 0 && step.frameId <= 255)) ||
-        !(step.ledColor === null || ['Green', 'Yellow', 'Red'].includes(step.ledColor)) ||
+        !['Green', 'Yellow', 'Red'].includes(step.ledColor) ||
         !(step.costCents === null || Number.isInteger(step.costCents))) {
       throw new Error(`Invalid trace step ${index} for ${scenarioName}`);
     }

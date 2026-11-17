@@ -162,7 +162,67 @@
     },
     {
       "category": "sequenceMessages",
+      "id": "sequence:rent:m1"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m2"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m3"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m4"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m5"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m6"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:rent:m7"
+    },
+    {
+      "category": "sequenceMessages",
       "id": "sequence:return:m0"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m1"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m2"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m3"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m4"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m5"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m6"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m7"
+    },
+    {
+      "category": "sequenceMessages",
+      "id": "sequence:return:m8"
     },
     {
       "category": "states",
@@ -378,14 +438,76 @@
         "tag": "transition:t8:repaired()"
       }
     ],
+    "firmware/lib/nodes/ActuatorNode.h": [
+      {
+        "id": "sequence:rent:m1",
+        "tag": "sequence:rent:m1"
+      },
+      {
+        "id": "sequence:return:m4",
+        "tag": "sequence:return:m4"
+      },
+      {
+        "id": "sequence:rent:m2",
+        "tag": "sequence:rent:m2"
+      },
+      {
+        "id": "sequence:rent:m4",
+        "tag": "sequence:rent:m4"
+      },
+      {
+        "id": "sequence:rent:m5",
+        "tag": "sequence:rent:m5"
+      },
+      {
+        "id": "sequence:rent:m6",
+        "tag": "sequence:rent:m6"
+      },
+      {
+        "id": "sequence:return:m1",
+        "tag": "sequence:return:m1"
+      },
+      {
+        "id": "sequence:return:m2",
+        "tag": "sequence:return:m2"
+      },
+      {
+        "id": "sequence:return:m5",
+        "tag": "sequence:return:m5"
+      },
+      {
+        "id": "sequence:return:m6",
+        "tag": "sequence:return:m6"
+      },
+      {
+        "id": "sequence:return:m8",
+        "tag": "sequence:return:m8"
+      }
+    ],
     "firmware/lib/nodes/SensorNode.h": [
       {
         "id": "sequence:return:m0",
         "tag": "sequence:return:m0"
       },
       {
+        "id": "sequence:return:m3",
+        "tag": "sequence:return:m3"
+      },
+      {
+        "id": "sequence:return:m7",
+        "tag": "sequence:return:m7"
+      },
+      {
+        "id": "sequence:rent:m7",
+        "tag": "sequence:rent:m7"
+      },
+      {
         "id": "sequence:rent:m0",
         "tag": "sequence:rent:m0"
+      },
+      {
+        "id": "sequence:rent:m3",
+        "tag": "sequence:rent:m3"
       }
     ],
     "firmware/lib/protocol/generated/frame_ids.h": [

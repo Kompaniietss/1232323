@@ -1,1 +1,1 @@
-{"scenario":"invalid-trigger","steps":[{"input":"invalidReturn","stateBefore":"Available","stateAfter":"Available","frameId":null,"ledColor":null,"costCents":null}]}
+{"scenario":"invalid-trigger","steps":[{"input":"invalidReturn","stateBefore":"Available","stateAfter":"Available","frameId":null,"ledColor":"Green","costCents":null}]}

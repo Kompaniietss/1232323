@@ -138,7 +138,15 @@ function tagElement(tag, source, offset, catalog) {
     );
     if (frame) {
       const enumName = frame.name.replace(/\./g, '_').toUpperCase();
-      valid = new RegExp(`link_->send\\s*\\(\\s*static_cast\\s*<\\s*uint8_t\\s*>\\s*\\(\\s*FrameId::${enumName}`).test(afterTag);
+      const sendsFrame = new RegExp(
+        `(?:link_->send|sendCost)\\s*\\(\\s*static_cast\\s*<\\s*uint8_t\\s*>\\s*\\(\\s*FrameId::${enumName}`,
+      ).test(afterTag);
+      const internalAction =
+        (flow === 'rent' && messageId === 'm1' &&
+          /StateMachine::apply\s*\(\s*bike_\s*,\s*BikeTrigger::Reserve\s*\)/.test(afterTag)) ||
+        (flow === 'return' && messageId === 'm4' &&
+          /StateMachine::apply\s*\(\s*bike_\s*,\s*BikeTrigger::ReturnToStation\s*\)/.test(afterTag));
+      valid = sendsFrame || internalAction;
     }
   } else if (tag.startsWith('relationship:')) {
     elementId = tag;

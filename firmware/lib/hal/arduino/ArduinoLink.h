@@ -34,8 +34,9 @@ class ArduinoLink : public ILink {
     return serial_.write(frame, frameLength) == frameLength;
   }
 
-  bool receive(uint8_t* id, uint8_t* payload, unsigned int maxLen) override {
-    if (id == nullptr || payload == nullptr) {
+  bool receive(uint8_t* id, uint8_t* payload, unsigned int maxLen,
+               unsigned int* receivedLen) override {
+    if (id == nullptr || payload == nullptr || receivedLen == nullptr) {
       return false;
     }
 
@@ -74,6 +75,7 @@ class ArduinoLink : public ILink {
           for (uint8_t i = 0; i < receiveLength_; ++i) {
             payload[i] = receivePayload_[i];
           }
+          *receivedLen = receiveLength_;
           resetReceive();
           return true;
         }

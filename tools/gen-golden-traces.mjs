@@ -17,12 +17,26 @@ const server = await createServer({
 });
 
 try {
-  const [{ createSeededMockState }, { rentBike }, { returnBike }, { applyBikeTrigger }] = await Promise.all([
+  const [
+    { createSeededMockState },
+    { rentBike },
+    { returnBike },
+    { applyBikeTrigger },
+    { calculateRentalCost },
+  ] = await Promise.all([
     server.ssrLoadModule('/src/infrastructure/mock/seedData.ts'),
     server.ssrLoadModule('/src/application/rentBike.ts'),
     server.ssrLoadModule('/src/application/returnBike.ts'),
     server.ssrLoadModule('/src/domain/stateMachine.ts'),
+    server.ssrLoadModule('/src/domain/pricing.ts'),
   ]);
+  const protocol = JSON.parse(await readFile(path.join(root, 'model', 'protocol.json'), 'utf8'));
+  const frameIds = new Map(protocol.messages.map(({ name, frameId }) => [name, frameId]));
+  const protocolFrameId = (name) => {
+    const value = frameIds.get(name);
+    if (!Number.isInteger(value)) throw new Error(`Missing protocol frame ${name}`);
+    return value;
+  };
 
   await mkdir(tracesDir, { recursive: true });
   for (const scenario of scenarios) {
@@ -51,9 +65,12 @@ try {
       for (const input of scenario.inputs) {
         const stateBefore = bike.state;
         let costCents = null;
+        let frameId = null;
         if (input === 'rentBike') {
           if (bike.state === 'Available') {
             rentBike(state, bike.bikeId);
+            frameId = protocolFrameId('rent.receipt');
+            costCents = Math.round(calculateRentalCost(0) * 100);
           } else {
             let rejected = false;
             try {
@@ -65,11 +82,13 @@ try {
               rejected = true;
             }
             if (!rejected) throw new Error(`Scenario ${scenario.name} unexpectedly accepted rentBike`);
+            frameId = protocolFrameId('rent.request');
           }
         } else if (input === 'returnBike') {
           clock += scenario.durationMs;
           const result = returnBike(state);
           costCents = Math.round(result.receipt.cost * 100);
+          frameId = protocolFrameId('return.ended');
         } else if (input === 'reserve' || input === 'timeout' || input === 'batteryLow') {
           const triggers = {
             reserve: 'reserve()',
@@ -96,8 +115,10 @@ try {
           input,
           stateBefore,
           stateAfter: bike.state,
-          frameId: null,
-          ledColor: null,
+          frameId,
+          ledColor: bike.state === 'Available' ? 'Green'
+            : bike.state === 'Reserved' ? 'Yellow'
+              : 'Red',
           costCents,
         });
       }

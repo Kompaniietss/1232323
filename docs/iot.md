@@ -4,11 +4,17 @@ This repository keeps the existing TypeScript e-bike rental app as the reference
 
 ## Roles and wiring
 
-- Sensor node: a button that emits a short-press rent request or a long-press return request using the framed protocol.
+- Sensor node: a state-dependent button and USB Serial user terminal. An idle short press requests rent; an idle long press requests return. While awaiting simulated payment, a short press confirms it; after a return receipt, a short press closes the flow. A double press after a rent receipt requests it again.
 - Actuator node: owns the Bike state machine, reservation timeout, low-battery guard, pricing logic, and LED outputs.
 - Link: the only communication path between the two nodes. It is modeled as a framed UART channel.
 
+USB Serial runs at 115200 baud and is the User terminal for payment prompts and
+receipts. Payment is simulated: no payment provider is contacted or charged.
+The return prompt says this explicitly; a short button press confirms the
+simulation. The double-press window for `rent:m7` is 350 ms.
+
 The intended Mega wiring is:
+
 - Button to digital pin 2, pulldown to GND
 - Green LED on pin 5
 - Yellow LED on pin 6

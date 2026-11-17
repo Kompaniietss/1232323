@@ -16,8 +16,8 @@
       "total": 3
     },
     "sequenceMessages": {
-      "gap_pct": 88.24,
-      "matched": 2,
+      "gap_pct": 0,
+      "matched": 17,
       "total": 17
     },
     "states": {
@@ -37,69 +37,8 @@
       "id": "class:Pricing.operation:calculate"
     }
   ],
-  "gap_pct": 21.74,
-  "matched": 54,
-  "missing": [
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:rent:m1"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:rent:m2"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:rent:m3"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:rent:m4"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:rent:m5"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:rent:m6"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:rent:m7"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:return:m1"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:return:m2"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:return:m3"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:return:m4"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:return:m5"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:return:m6"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:return:m7"
-    },
-    {
-      "category": "sequenceMessages",
-      "id": "sequence:return:m8"
-    }
-  ],
+  "gap_pct": 0,
+  "matched": 69,
+  "missing": [],
   "total": 69
 }

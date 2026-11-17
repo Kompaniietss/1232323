@@ -9,8 +9,10 @@
 #include "../lib/domain/Station.h"
 #include "../lib/domain/User.h"
 #include "../lib/hal/arduino/ArduinoButton.h"
+#include "../lib/hal/arduino/ArduinoClock.h"
 #include "../lib/hal/arduino/ArduinoLed.h"
 #include "../lib/hal/arduino/ArduinoLink.h"
+#include "../lib/hal/arduino/ArduinoUserTerminal.h"
 #include "../lib/nodes/ActuatorNode.h"
 #include "../lib/nodes/SensorNode.h"
 
@@ -26,10 +28,13 @@ firmware::ArduinoButton button(2);
 firmware::ArduinoLed green(5, firmware::LedColor::Green);
 firmware::ArduinoLed yellow(6, firmware::LedColor::Yellow);
 firmware::ArduinoLed red(7, firmware::LedColor::Red);
+firmware::ArduinoClock clock;
+firmware::ArduinoUserTerminal userTerminal(Serial);
 firmware::ArduinoLink sensorLink(Serial1);
 firmware::ArduinoLink actuatorLink(Serial2);
-firmware::SensorNode sensor(&button, &sensorLink);
-firmware::ActuatorNode actuator(&bike, &green, &yellow, &red, &actuatorLink);
+firmware::SensorNode sensor(&button, &sensorLink, &clock, &userTerminal);
+firmware::ActuatorNode actuator(
+    &bike, &green, &yellow, &red, &actuatorLink, &clock, &rental, &station);
 
 void initializeDomainAssociations() {
   station.dockBike(&bike);
@@ -51,6 +56,6 @@ void setup() {
 }
 
 void loop() {
-  sensor.tick();
-  actuator.tick();
+  if (!sensor.tick()) userTerminal.showError("Sensor flow failed.");
+  if (!actuator.tick()) userTerminal.showError("Actuator flow failed.");
 }

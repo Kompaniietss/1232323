@@ -360,7 +360,69 @@ ADR 0003 records the approved JSON correction and `int32_t` minor-unit represent
 
 #### User-requested firmware sequence/relationship follow-up — Group 1 (2026-11-17)
 
-Implemented class relationships `e1` and `e2` as real non-owning `Rental::user` and `Rental::bike` pointers, with dedicated native relationship tests. Updated model extraction to accept a declared pointer to either UML relationship endpoint while still requiring a `@model` tag and actual member declaration. Instantiated User, Rental, and Station in `firmware/src/main.cpp` and connected the relationships and Station inventory during setup. Verification: `npm run model:verify` reports 54/69 matched (`gap_pct`: 21.74); native Unity tests pass 25/25; `pio run -e mega` passes with 765 B RAM and 6,368 B Flash. Group 1 is complete and awaits the user's commit before Group 2.
+Implemented class relationships `e1` and `e2` as real non-owning `Rental::user` and `Rental::bike` pointers, with dedicated native relationship tests. Updated model extraction to accept a declared pointer to either UML relationship endpoint while still requiring a `@model` tag and actual member declaration. Instantiated User, Rental, and Station in `firmware/src/main.cpp` and connected the relationships and Station inventory during setup. Verification at that phase: `npm run model:verify` reports 54/69 matched (`gap_pct`: 21.74); native Unity tests pass 25/25; `pio run -e mega` passes with 765 B RAM and 6,368 B Flash. Group 1 was committed as `801f40a`, clearing its commit prerequisite for Groups 2 and 3.
+
+#### User-approved firmware sequence follow-up — Groups 2 and 3 (2026-11-17)
+
+ADR 0004 accepts Option B: USB Serial at 115200 is the User terminal; payment
+is simulated; button meanings depend on SensorNode state; `return:m8` is only
+sent after a real `return:m7` close frame. Implemented the rent `m1`–`m7` and
+return `m1`–`m8` handlers without changing model JSON. Firmware now sends and
+receives modeled UART frames, updates Station inventory and the Bike state
+machine, computes cent-valued costs, writes payment prompts/receipts to the
+terminal, and maps the requested button gestures. The implementation uses an
+800 ms long-press boundary and 350 ms double-press window; the latter and the
+rent-start 100-cent receipt are recorded assumptions in ADR 0004.
+
+**Firmware sequence alignment matrix:**
+
+| Element | Implementation and test | Status |
+| --- | --- | --- |
+| rent `m1` reserve | `ActuatorNode::reserveBike`; paired-node test checks reservation and inventory release | aligned |
+| rent `m2` reserved | `ActuatorNode::sendRentReserved`; paired-node test checks frame 18 | aligned |
+| rent `m3` unlock | `SensorNode` sends after `m2`; paired-node test checks frame 19 | aligned |
+| rent `m4` started | `ActuatorNode::sendRentStarted`; paired-node test checks frame 20 and `InUse` | aligned |
+| rent `m5` active rental | `ActuatorNode::sendRentActive`; paired-node test checks frame 21 | aligned |
+| rent `m6` cost + receipt | `ActuatorNode::sendRentReceipt` → USB terminal; paired-node test checks 100 cents | deviated endpoint mapping, accepted by ADR 0004 |
+| rent `m7` show receipt | receipt-state double press → SensorNode frame 23 → Actuator receipt reply; paired-node test | deviated input mapping, accepted by ADR 0004 |
+| return `m1` docked | `Station::dockBike` and frame 33; paired-node test checks inventory | aligned |
+| return `m2` payment request | frame 34 → USB Serial prompt; paired-node test checks 130 cents | deviated endpoint mapping, accepted by ADR 0004 |
+| return `m3` confirm payment | short press sends frame 35; no real charge; paired-node test | deviated simulated-payment mapping, accepted by ADR 0004 |
+| return `m4` lock | `StateMachine::ReturnToStation` plus `Bike::lock`; paired-node test checks state | aligned |
+| return `m5` available | frame 37 and Green LED; paired-node test | aligned |
+| return `m6` receipt | frame 38 → USB terminal; paired-node test checks 130 cents | deviated endpoint mapping, accepted by ADR 0004 |
+| return `m7` close | post-receipt short press sends frame 39; paired-node test | deviated input mapping, accepted by ADR 0004 |
+| return `m8` ride ended | Actuator sends frame 40 only after frame 39; paired-node test | aligned |
+
+All 17 modeled messages are extracted and matched. The TypeScript application
+sequence declarations still differ from the firmware sequence model; that
+known cross-representation discrepancy is retained rather than silently
+rewriting the web reference flow.
+
+Verification: `npm run model:verify` matches all 69 model elements (no missing
+elements; 17/17 sequence messages) with the existing extra `Pricing.calculate`
+implementation tag. `pio test -e native` passes 27/27; the added end-to-end
+tests cover both flows, LED colors, station inventory, terminal costs, and
+frame order. `pio run -e mega` passes (899 B RAM, 9,042 B Flash).
+`npm run traces:verify` reports 0 differences across 5 scenarios; successful
+rent has frame 22 / Red / 100 cents, successful return has frame 40 / Green /
+130 cents. State-only trace steps retain null frame/cost because those inputs
+emit no frame and incur no charge; every trace step has its actual LED color.
+Formatting and targeted ESLint pass. `npm run lint` fails on four `console`
+globals in unchanged
+`tools/extract-cpp-model.mjs`, `tools/gen-protocol.mjs`,
+`tools/gen-transition-table.mjs`, and `tools/verify-model.mjs`; the modified
+JavaScript tools pass targeted ESLint. `npm run traces:verify` emits Node's
+`DEP0205` deprecation warning but completes successfully with 0 differences.
+
+**Known discrepancies and limitations:** the existing TypeScript application
+message sequences differ from `model/sequences.json`; that web flow was not
+changed by this firmware-only request and remains a reported
+cross-representation deviation. The supplied UML `.drawio` files and research
+document were absent at their documented local paths, so direct diagram
+inspection was unavailable; the sequence/protocol JSON was left unchanged.
+Phase 10 remains open. This Groups 2–3 implementation is at its eye gate; no
+commit was made.
 
 #### Phase 1 closeout evidence — 2026-10-19
 
@@ -484,3 +546,4 @@ Implemented class relationships `e1` and `e2` as real non-owning `Rental::user` 
 | 0001 | Accepted | Non-null active rental end-time boundary.                                                         | `Rental.endTime`, `Rental.start()`, `Rental.end()`                                           |
 | 0002 | Accepted | CRC coverage and maximum IoT frame payload.                                                       | Firmware frame protocol                                                                    |
 | 0003 | Accepted | Remove JSON-only User constructor; represent firmware cents as int32; implement bounded Station inventory. | `User`, `Rental.cost`, `Station.dockBike`, `Station.releaseBike`, relationship `e3`; model total |
+| 0004 | Accepted | USB Serial User terminal, state-dependent button gestures, and simulated payment for firmware sequence endpoints. | Rent `m1`–`m7`; return `m1`–`m8`; protocol frames |

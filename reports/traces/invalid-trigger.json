@@ -6,7 +6,7 @@
       "stateBefore": "Available",
       "stateAfter": "Available",
       "frameId": null,
-      "ledColor": null,
+      "ledColor": "Green",
       "costCents": null
     }
   ]

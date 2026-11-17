@@ -1,1 +1,1 @@
-{"scenario":"successful-rent","steps":[{"input":"rentBike","stateBefore":"Available","stateAfter":"InUse","frameId":null,"ledColor":null,"costCents":null}]}
+{"scenario":"successful-rent","steps":[{"input":"rentBike","stateBefore":"Available","stateAfter":"InUse","frameId":22,"ledColor":"Red","costCents":100}]}

@@ -16,6 +16,8 @@
     "test:safari": "node tests/safari/safari-smoke.mjs",
     "diagrams:generate": "node scripts/generate-diagrams.mjs",
     "diagrams:check": "node scripts/generate-diagrams.mjs --check",
+    "wokwi:generate": "node tools/gen-wokwi-diagram.mjs",
+    "wokwi:check": "node tools/gen-wokwi-diagram.mjs --check",
     "iot:generate": "node tools/gen-transition-table.mjs && node tools/gen-protocol.mjs && node tools/gen-wokwi-diagram.mjs && npm run traces:verify",
     "iot:check": "node tools/extract-cpp-model.mjs && node tools/verify-model.mjs",
     "traces:verify": "node tools/gen-golden-traces.mjs && node tools/run-native-traces.mjs && node tools/compare-traces.mjs",

@@ -14,6 +14,7 @@ npx playwright install chromium firefox webkit msedge
 npm run test:e2e
 npm run test:safari
 npm run diagrams:check
+npm run wokwi:check
 npm run build
 ```
 
@@ -26,10 +27,13 @@ npm run traces:verify
 ```
 
 `npm test` runs Vitest unit/integration tests and reports source coverage.
-`pio test -e native` runs the Unity suites for firmware domain and protocol
-code; `pio run -e mega` compiles the reference Arduino Mega firmware.
+`pio test -e native` runs the Unity suites for firmware domain, protocol, and
+the end-to-end fake button/link/actuator/LED/terminal rent and return flows;
+`pio run -e mega` compiles the reference Arduino Mega firmware.
 `npm run traces:verify` runs the TypeScript golden scenarios, separately
 compiles and runs the native C++ replay, then reports deep per-step differences.
+`npm run wokwi:check` verifies that the committed firmware diagram matches the
+Wokwi parts and wiring in `model/hardware.json`.
 `npm run test:e2e` runs Playwright tests on Chromium, Microsoft Edge (Windows
 only), Firefox, and WebKit. On macOS with Safari WebDriver enabled,
 `npm run test:safari` runs the rent, return, receipt, and reload-reset smoke

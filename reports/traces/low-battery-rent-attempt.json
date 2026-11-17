@@ -6,15 +6,15 @@
       "stateBefore": "Available",
       "stateAfter": "Maintenance",
       "frameId": null,
-      "ledColor": null,
+      "ledColor": "Red",
       "costCents": null
     },
     {
       "input": "rentBike",
       "stateBefore": "Maintenance",
       "stateAfter": "Maintenance",
-      "frameId": null,
-      "ledColor": null,
+      "frameId": 16,
+      "ledColor": "Red",
       "costCents": null
     }
   ]

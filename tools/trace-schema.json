@@ -11,14 +11,29 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["input", "stateBefore", "stateAfter", "frameId", "ledColor", "costCents"],
+        "required": [
+          "input",
+          "stateBefore",
+          "stateAfter",
+          "frameId",
+          "ledColor",
+          "costCents"
+        ],
         "properties": {
           "input": { "type": "string" },
           "stateBefore": { "enum": ["Available", "Reserved", "InUse", "Maintenance"] },
           "stateAfter": { "enum": ["Available", "Reserved", "InUse", "Maintenance"] },
-          "frameId": { "type": ["integer", "null"], "minimum": 0, "maximum": 255 },
-          "ledColor": { "enum": ["Green", "Yellow", "Red", null] },
-          "costCents": { "type": ["integer", "null"] }
+          "frameId": {
+            "type": ["integer", "null"],
+            "minimum": 0,
+            "maximum": 255,
+            "description": "Last emitted protocol frame, or null when the input is state-machine-only."
+          },
+          "ledColor": { "enum": ["Green", "Yellow", "Red"] },
+          "costCents": {
+            "type": ["integer", "null"],
+            "description": "Receipt or payment amount in cents, or null when the input does not charge."
+          }
         }
       }
     }
