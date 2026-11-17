@@ -144,7 +144,9 @@ function tagElement(tag, source, offset, catalog) {
     elementId = tag;
     const relation = catalog.relationships.find((item) => `relationship:${item.id}` === elementId);
     if (relation) {
-      valid = new RegExp(`\\b${relation.target}\\s*\\*?\\s+[A-Za-z_]\\w*\\s*(?:\\[[^\\]]*\\])?(?:\\s*=\\s*\\{\\s*\\})?\\s*;`).test(afterTag);
+      valid = [relation.source, relation.target].some((endpoint) =>
+        new RegExp(`\\b${endpoint}\\s*\\*?\\s+[A-Za-z_]\\w*\\s*(?:\\[[^\\]]*\\])?(?:\\s*=\\s*\\{\\s*\\})?\\s*;`).test(afterTag),
+      );
     }
   } else {
     const operation = /^([A-Za-z_]\w*)\.([A-Za-z_]\w*)\(\)$/.exec(tag);

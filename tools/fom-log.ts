@@ -180,6 +180,65 @@ function runBuild(): CommandResult {
   return runPlatformio(['run', '-e', 'mega']);
 }
 
+function runTraceComparison(): { traceDiffs: string; note: string; hasDifferences: boolean } {
+  const scripts = [
+    ['TypeScript trace generation', 'gen-golden-traces.mjs'],
+    ['Native C++ trace replay', 'run-native-traces.mjs'],
+  ] as const;
+  for (const [label, script] of scripts) {
+    const result = run(process.execPath, [path.join(root, 'tools', script)]);
+    if (result.status !== 0) {
+      return {
+        traceDiffs: '',
+        note: `${label} failed; trace differences not measured: ${result.stderr.trim() || result.error?.message || result.stdout.trim() || 'command failed'}`,
+        hasDifferences: false,
+      };
+    }
+  }
+
+  const comparison = run(process.execPath, [path.join(root, 'tools', 'compare-traces.mjs')]);
+  if (comparison.error) {
+    return {
+      traceDiffs: '',
+      note: `Trace comparison could not run: ${comparison.error.message}`,
+      hasDifferences: false,
+    };
+  }
+  let traceDiffs: number;
+  try {
+    const result = JSON.parse(comparison.stdout) as { trace_diffs?: unknown };
+    if (typeof result.trace_diffs !== 'number' ||
+        !Number.isInteger(result.trace_diffs) ||
+        result.trace_diffs < 0) {
+      throw new Error('comparison output has no non-negative integer trace_diffs');
+    }
+    traceDiffs = result.trace_diffs;
+  } catch (error) {
+    return {
+      traceDiffs: '',
+      note: `Trace comparison could not be measured: ${error instanceof Error ? error.message : String(error)}`,
+      hasDifferences: false,
+    };
+  }
+
+  if (comparison.status !== 0 && traceDiffs === 0) {
+    return {
+      traceDiffs: '',
+      note: `Trace comparison failed: ${comparison.stderr.trim() || comparison.error?.message || 'comparison did not complete'}`,
+      hasDifferences: false,
+    };
+  }
+  if (traceDiffs > 0) {
+    console.error(`TypeScript/native trace differences:\n${comparison.stdout}`);
+    return {
+      traceDiffs: String(traceDiffs),
+      note: `TypeScript/native trace differences: ${traceDiffs}`,
+      hasDifferences: true,
+    };
+  }
+  return { traceDiffs: '0', note: '', hasDifferences: false };
+}
+
 function countUnityResults(output: string): { passed: number; total: number } {
   const ansiEscape = String.fromCharCode(27);
   const cleanOutput = output.replace(new RegExp(`${ansiEscape}\\[[0-9;]*m`, 'g'), '');
@@ -307,7 +366,14 @@ async function recordCurrentCheckout(): Promise<void> {
   if (testRun.error) console.error(`PlatformIO native tests could not run: ${testRun.error.message}`);
   if (testRun.status !== 0) console.error(testRun.output.trim() || 'PlatformIO native tests failed without output');
 
+  const traceResults = runTraceComparison();
+  if (traceResults.note) console.error(traceResults.note);
+
   const buildOk = build.status === 0;
+  const notes = [
+    testResults.total > 0 ? '' : `Native tests not counted: ${testFailureReason(testRun)}`,
+    traceResults.note,
+  ].filter(Boolean).join('; ');
   const row = [
     commit,
     dateMatch[1]!,
@@ -315,19 +381,19 @@ async function recordCurrentCheckout(): Promise<void> {
     String(verification.gap_pct),
     testResults.total > 0 ? String(testResults.passed) : '',
     testResults.total > 0 ? String(testResults.total) : '',
-    '',
+    traceResults.traceDiffs,
     buildOk ? parseBuildMemory(build.output, 'Flash') : '',
     buildOk ? parseBuildMemory(build.output, 'RAM') : '',
     '',
-    testResults.total > 0 ? '' : `Native tests not counted: ${testFailureReason(testRun)}`,
+    notes,
   ];
 
   const rows = await loadExistingRows();
   const matchingRows = rows.filter((existingRow) => existingRow[0] === commit);
   if (matchingRows.length > 1) throw new Error(`reports/fom.csv contains duplicate rows for ${commit}`);
-  await writeRows([...rows.filter((existingRow) => existingRow[0] !== commit), row]);
   console.log(serializeCsv([row]).trimEnd());
-  if (!buildOk) process.exitCode = 1;
+  await writeRows([...rows.filter((existingRow) => existingRow[0] !== commit), row]);
+  if (!buildOk || traceResults.hasDifferences) process.exitCode = 1;
 }
 
 try {

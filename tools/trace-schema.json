@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "E-bike firmware parity trace",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["scenario", "steps"],
+  "properties": {
+    "scenario": { "type": "string" },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["input", "stateBefore", "stateAfter", "frameId", "ledColor", "costCents"],
+        "properties": {
+          "input": { "type": "string" },
+          "stateBefore": { "enum": ["Available", "Reserved", "InUse", "Maintenance"] },
+          "stateAfter": { "enum": ["Available", "Reserved", "InUse", "Maintenance"] },
+          "frameId": { "type": ["integer", "null"], "minimum": 0, "maximum": 255 },
+          "ledColor": { "enum": ["Green", "Yellow", "Red", null] },
+          "costCents": { "type": ["integer", "null"] }
+        }
+      }
+    }
+  }
+}

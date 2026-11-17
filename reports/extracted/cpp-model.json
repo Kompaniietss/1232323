@@ -146,6 +146,14 @@
     },
     {
       "category": "relationships",
+      "id": "relationship:e1"
+    },
+    {
+      "category": "relationships",
+      "id": "relationship:e2"
+    },
+    {
+      "category": "relationships",
       "id": "relationship:e3"
     },
     {
@@ -262,6 +270,14 @@
       {
         "id": "class:Rental.attribute:cost",
         "tag": "Rental.cost"
+      },
+      {
+        "id": "relationship:e1",
+        "tag": "relationship:e1"
+      },
+      {
+        "id": "relationship:e2",
+        "tag": "relationship:e2"
       },
       {
         "id": "class:Rental.operation:start",

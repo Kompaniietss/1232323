@@ -1,0 +1,39 @@
+{
+  "scenarios": [
+    {
+      "name": "successful-rent",
+      "initialState": "Available",
+      "batteryLevel": 80,
+      "durationMs": 0,
+      "inputs": ["rentBike"]
+    },
+    {
+      "name": "successful-return",
+      "initialState": "Available",
+      "batteryLevel": 80,
+      "durationMs": 90000,
+      "inputs": ["rentBike", "returnBike"]
+    },
+    {
+      "name": "reservation-timeout",
+      "initialState": "Available",
+      "batteryLevel": 80,
+      "durationMs": 0,
+      "inputs": ["reserve", "timeout"]
+    },
+    {
+      "name": "low-battery-rent-attempt",
+      "initialState": "Available",
+      "batteryLevel": 20,
+      "durationMs": 0,
+      "inputs": ["batteryLow", "rentBike"]
+    },
+    {
+      "name": "invalid-trigger",
+      "initialState": "Available",
+      "batteryLevel": 80,
+      "durationMs": 0,
+      "inputs": ["invalidReturn"]
+    }
+  ]
+}

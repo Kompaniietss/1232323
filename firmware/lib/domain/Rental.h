@@ -2,6 +2,9 @@
 
 #include <stdint.h>
 
+#include "Bike.h"
+#include "User.h"
+
 namespace firmware {
 
 // @model Rental
@@ -14,6 +17,10 @@ struct Rental {
   unsigned long endTime;
   // @model Rental.cost
   int32_t costCents;
+  // @model relationship:e1
+  User* user;
+  // @model relationship:e2
+  Bike* bike;
 
   // @model Rental.start()
   void start() {
