@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 namespace firmware {
 
 // @model Rental
@@ -10,7 +12,8 @@ struct Rental {
   unsigned long startTime;
   // @model Rental.endTime
   unsigned long endTime;
-  int costCents;
+  // @model Rental.cost
+  int32_t costCents;
 
   // @model Rental.start()
   void start() {

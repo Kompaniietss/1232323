@@ -31,6 +31,11 @@ void test_exactly_two_minutes_is_two_started_minutes(void) {
   TEST_ASSERT_EQUAL_INT(130, firmware::Pricing::calculate(120000UL));
 }
 
+void test_thirty_seven_hours_cost_fits_signed_32_bit_cents(void) {
+  const unsigned long durationMs = 37UL * 60UL * 60UL * 1000UL;
+  TEST_ASSERT_EQUAL_INT32(33400L, firmware::Pricing::calculate(durationMs));
+}
+
 int main(void) {
   UNITY_BEGIN();
   RUN_TEST(test_zero_duration_is_unlock_fee_only);
@@ -40,5 +45,6 @@ int main(void) {
   RUN_TEST(test_one_ms_over_a_minute_is_two_started_minutes);
   RUN_TEST(test_61_seconds_is_two_started_minutes);
   RUN_TEST(test_exactly_two_minutes_is_two_started_minutes);
+  RUN_TEST(test_thirty_seven_hours_cost_fits_signed_32_bit_cents);
   return UNITY_END();
 }

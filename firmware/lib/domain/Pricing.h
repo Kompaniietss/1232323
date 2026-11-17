@@ -1,6 +1,10 @@
 #pragma once
 
+#include <stdint.h>
+
 namespace firmware {
+
+static_assert(sizeof(int32_t) >= 4, "Rental pricing requires at least 32-bit cents");
 
 // @model Pricing
 class Pricing {
@@ -10,9 +14,9 @@ class Pricing {
   static constexpr unsigned long kMillisecondsPerMinute = 60000UL;
 
   // @model Pricing.calculate()
-  static int calculate(unsigned long durationMs) {
+  static int32_t calculate(unsigned long durationMs) {
     const unsigned long startedMinutes = durationMs == 0 ? 0 : (durationMs + kMillisecondsPerMinute - 1UL) / kMillisecondsPerMinute;
-    return kUnlockFeeCents + static_cast<int>(startedMinutes * kPricePerStartedMinuteCents);
+    return static_cast<int32_t>(kUnlockFeeCents + startedMinutes * kPricePerStartedMinuteCents);
   }
 };
 

@@ -7,9 +7,7 @@
         {"name": "name", "type": "string"},
         {"name": "paymentMethod", "type": "string"}
       ],
-      "operations": [
-        {"name": "constructor", "signature": "User(userId: string, name: string, paymentMethod: string)"}
-      ]
+      "operations": []
     },
     {
       "name": "Rental",

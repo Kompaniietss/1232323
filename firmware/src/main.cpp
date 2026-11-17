@@ -3,6 +3,7 @@
 #include <Arduino.h>
 
 #include "../lib/domain/Bike.h"
+#include "../lib/domain/Pricing.h"
 #include "../lib/domain/StateMachine.h"
 #include "../lib/hal/arduino/ArduinoButton.h"
 #include "../lib/hal/arduino/ArduinoLed.h"

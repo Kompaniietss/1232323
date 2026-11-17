@@ -12,6 +12,10 @@ const transitionTriggerNames = new Map([
   ['repaired()', 'Repaired'],
 ]);
 
+const attributeAliases = new Map([
+  ['Rental.cost', 'costCents'],
+]);
+
 const compareText = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 
 export async function loadModel(root) {
@@ -140,7 +144,7 @@ function tagElement(tag, source, offset, catalog) {
     elementId = tag;
     const relation = catalog.relationships.find((item) => `relationship:${item.id}` === elementId);
     if (relation) {
-      valid = new RegExp(`\\b${relation.target}\\s*\\*?\\s+[A-Za-z_]\\w*\\s*(?:\\[[^\\]]*\\])?\\s*;`).test(afterTag);
+      valid = new RegExp(`\\b${relation.target}\\s*\\*?\\s+[A-Za-z_]\\w*\\s*(?:\\[[^\\]]*\\])?(?:\\s*=\\s*\\{\\s*\\})?\\s*;`).test(afterTag);
     }
   } else {
     const operation = /^([A-Za-z_]\w*)\.([A-Za-z_]\w*)\(\)$/.exec(tag);
@@ -150,7 +154,8 @@ function tagElement(tag, source, offset, catalog) {
       valid = isImplementedOperation(source, offset, operation[2]);
     } else if (attribute) {
       elementId = `class:${attribute[1]}.attribute:${attribute[2]}`;
-      valid = new RegExp(`\\b${attribute[2]}\\s*(?:=[^;]*)?;`).test(afterTag);
+      const memberName = attributeAliases.get(`${attribute[1]}.${attribute[2]}`) ?? attribute[2];
+      valid = new RegExp(`\\b${memberName}\\s*(?:=[^;]*)?;`).test(afterTag);
     } else {
       return null;
     }
