@@ -1,5 +1,13 @@
 {
   "scenario": "successful-rent",
-  "status": "pass",
-  "detail": "Bike reserved and unlocked successfully."
+  "steps": [
+    {
+      "input": "rentBike",
+      "stateBefore": "Available",
+      "stateAfter": "InUse",
+      "frameId": null,
+      "ledColor": null,
+      "costCents": null
+    }
+  ]
 }

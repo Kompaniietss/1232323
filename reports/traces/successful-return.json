@@ -1,5 +1,21 @@
 {
   "scenario": "successful-return",
-  "status": "pass",
-  "detail": "Bike returned to station and locked."
+  "steps": [
+    {
+      "input": "rentBike",
+      "stateBefore": "Available",
+      "stateAfter": "InUse",
+      "frameId": null,
+      "ledColor": null,
+      "costCents": null
+    },
+    {
+      "input": "returnBike",
+      "stateBefore": "InUse",
+      "stateAfter": "Available",
+      "frameId": null,
+      "ledColor": null,
+      "costCents": 130
+    }
+  ]
 }

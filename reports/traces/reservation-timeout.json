@@ -1,5 +1,21 @@
 {
   "scenario": "reservation-timeout",
-  "status": "pass",
-  "detail": "Reservation expires after 10 minutes."
+  "steps": [
+    {
+      "input": "reserve",
+      "stateBefore": "Available",
+      "stateAfter": "Reserved",
+      "frameId": null,
+      "ledColor": null,
+      "costCents": null
+    },
+    {
+      "input": "timeout",
+      "stateBefore": "Reserved",
+      "stateAfter": "Available",
+      "frameId": null,
+      "ledColor": null,
+      "costCents": null
+    }
+  ]
 }

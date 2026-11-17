@@ -1,5 +1,21 @@
 {
   "scenario": "low-battery-rent-attempt",
-  "status": "blocked",
-  "detail": "Battery guard blocks rent when level <= 20."
+  "steps": [
+    {
+      "input": "batteryLow",
+      "stateBefore": "Available",
+      "stateAfter": "Maintenance",
+      "frameId": null,
+      "ledColor": null,
+      "costCents": null
+    },
+    {
+      "input": "rentBike",
+      "stateBefore": "Maintenance",
+      "stateAfter": "Maintenance",
+      "frameId": null,
+      "ledColor": null,
+      "costCents": null
+    }
+  ]
 }

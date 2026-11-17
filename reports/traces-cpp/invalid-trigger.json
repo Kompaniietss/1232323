@@ -1,7 +1,1 @@
-{
-  "scenario": "invalid-trigger",
-  "status": "error",
-  "detail": "Unsupported state-trigger pair remains unchanged.",
-  "source": "native-cpp-trace",
-  "matchedWithGolden": true
-}
+{"scenario":"invalid-trigger","steps":[{"input":"invalidReturn","stateBefore":"Available","stateAfter":"Available","frameId":null,"ledColor":null,"costCents":null}]}
