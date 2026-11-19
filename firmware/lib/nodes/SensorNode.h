@@ -14,15 +14,16 @@ class SensorNode {
  public:
   static constexpr unsigned long kLongPressThresholdMs = 800UL;
   static constexpr unsigned long kDoublePressWindowMs = 350UL;
+  static constexpr unsigned long kResponseTimeoutMs = 2000UL;
 
-  SensorNode(IButton* button, ILink* link, IClock* clock = nullptr,
+  SensorNode(IButton* button, ILink* link, IClock* clock,
              IUserTerminal* terminal = nullptr)
       : button_(button), link_(link), clock_(clock), terminal_(terminal) {}
 
   bool tick() {
-    if (button_ == nullptr || link_ == nullptr) return false;
+    if (button_ == nullptr || link_ == nullptr || clock_ == nullptr) return false;
 
-    bool healthy = true;
+    bool healthy = checkResponseTimeout();
     const bool pressed = button_->pressed();
     if (pressed) {
       wasPressed_ = true;
@@ -34,7 +35,6 @@ class SensorNode {
     if (!pressed && pendingDoublePress_ &&
         nowMs() - pendingPressAtMs_ >= kDoublePressWindowMs) {
       pendingDoublePress_ = false;
-      if (!sendRentRequest()) healthy = false;
     }
 
     uint8_t id = 0U;
@@ -53,6 +53,7 @@ class SensorNode {
     AwaitingRentReceipt,
     AwaitingRentReceiptDisplay,
     RentReceiptAvailable,
+    AwaitingPaymentRequest,
     AwaitingPaymentConfirmation,
     AwaitingReturnReceipt,
     AwaitingReturnClose,
@@ -60,6 +61,26 @@ class SensorNode {
   };
 
   unsigned long nowMs() const { return clock_ == nullptr ? 0UL : clock_->nowMs(); }
+
+  void waitForReply(Flow flow) {
+    flow_ = flow;
+    responseStartedAtMs_ = nowMs();
+    responseTimeoutActive_ = clock_ != nullptr;
+  }
+
+  bool checkResponseTimeout() {
+    if (!responseTimeoutActive_ || clock_ == nullptr ||
+        nowMs() - responseStartedAtMs_ < kResponseTimeoutMs) {
+      return true;
+    }
+
+    responseTimeoutActive_ = false;
+    pendingDoublePress_ = false;
+    flow_ = rentReceiptShown_ ? Flow::RentReceiptAvailable : Flow::Idle;
+    if (terminal_ == nullptr) return false;
+    terminal_->showError("Actuator response timed out");
+    return true;
+  }
 
   bool handlePress(unsigned long durationMs) {
     if (durationMs >= kLongPressThresholdMs) {
@@ -69,7 +90,7 @@ class SensorNode {
       if (!link_->send(static_cast<uint8_t>(FrameId::RETURN_REQUEST), nullptr, 0U)) {
         return false;
       }
-      flow_ = Flow::AwaitingPaymentConfirmation;
+      waitForReply(Flow::AwaitingPaymentRequest);
       return true;
     }
 
@@ -78,7 +99,7 @@ class SensorNode {
       if (!link_->send(static_cast<uint8_t>(FrameId::RETURN_CONFIRMPAYMENT), nullptr, 0U)) {
         return false;
       }
-      flow_ = Flow::AwaitingReturnReceipt;
+      waitForReply(Flow::AwaitingReturnReceipt);
       return true;
     }
 
@@ -87,31 +108,29 @@ class SensorNode {
       if (!link_->send(static_cast<uint8_t>(FrameId::RETURN_CLOSE), nullptr, 0U)) {
         return false;
       }
-      flow_ = Flow::AwaitingReturnEnded;
+      waitForReply(Flow::AwaitingReturnEnded);
       return true;
     }
 
-    if (flow_ == Flow::RentReceiptAvailable && clock_ != nullptr) {
+    if (flow_ == Flow::RentReceiptAvailable) {
       if (pendingDoublePress_) {
         if (nowMs() - pendingPressAtMs_ < kDoublePressWindowMs) {
-          pendingDoublePress_ = false;
           // @model sequence:rent:m7
           if (!link_->send(static_cast<uint8_t>(FrameId::RENT_SHOWRECEIPT), nullptr, 0U)) {
             return false;
           }
-          flow_ = Flow::AwaitingRentReceiptDisplay;
+          pendingDoublePress_ = false;
+          waitForReply(Flow::AwaitingRentReceiptDisplay);
           return true;
         }
         pendingDoublePress_ = false;
-        if (!sendRentRequest()) return false;
-        return true;
       }
       pendingDoublePress_ = true;
       pendingPressAtMs_ = nowMs();
       return true;
     }
 
-    if (flow_ == Flow::Idle || flow_ == Flow::RentReceiptAvailable) {
+    if (flow_ == Flow::Idle) {
       return sendRentRequest();
     }
     return true;
@@ -122,7 +141,7 @@ class SensorNode {
     if (!link_->send(static_cast<uint8_t>(FrameId::RENT_REQUEST), nullptr, 0U)) {
       return false;
     }
-    flow_ = Flow::AwaitingRentReserved;
+    waitForReply(Flow::AwaitingRentReserved);
     return true;
   }
 
@@ -134,7 +153,7 @@ class SensorNode {
       if (!link_->send(static_cast<uint8_t>(FrameId::RENT_UNLOCK), nullptr, 0U)) {
         return false;
       }
-      flow_ = Flow::AwaitingRentReceipt;
+      waitForReply(Flow::AwaitingRentReceipt);
       return true;
     }
     if (id == static_cast<uint8_t>(FrameId::RENT_RECEIPT) &&
@@ -144,15 +163,20 @@ class SensorNode {
       if (!decodeCost(payload, length, &costCents)) return false;
       if (terminal_ == nullptr) return false;
       terminal_->showReceipt(costCents);
+      responseTimeoutActive_ = false;
+      pendingDoublePress_ = false;
+      rentReceiptShown_ = true;
       flow_ = Flow::RentReceiptAvailable;
       return true;
     }
     if (id == static_cast<uint8_t>(FrameId::RETURN_PAYMENTREQUEST) &&
-        flow_ == Flow::AwaitingPaymentConfirmation) {
+        flow_ == Flow::AwaitingPaymentRequest) {
       int32_t costCents = 0;
       if (!decodeCost(payload, length, &costCents)) return false;
       if (terminal_ == nullptr) return false;
       terminal_->showPaymentPrompt(costCents);
+      responseTimeoutActive_ = false;
+      flow_ = Flow::AwaitingPaymentConfirmation;
       return true;
     }
     if (id == static_cast<uint8_t>(FrameId::RETURN_RECEIPT) &&
@@ -161,12 +185,15 @@ class SensorNode {
       if (!decodeCost(payload, length, &costCents)) return false;
       if (terminal_ == nullptr) return false;
       terminal_->showReceipt(costCents);
+      responseTimeoutActive_ = false;
       flow_ = Flow::AwaitingReturnClose;
       return true;
     }
     if (id == static_cast<uint8_t>(FrameId::RETURN_ENDED)) {
       if (length != 0U) return false;
       if (flow_ != Flow::AwaitingReturnEnded) return true;
+      responseTimeoutActive_ = false;
+      rentReceiptShown_ = false;
       flow_ = Flow::Idle;
       return true;
     }
@@ -191,6 +218,9 @@ class SensorNode {
   bool wasPressed_ = false;
   bool pendingDoublePress_ = false;
   unsigned long pendingPressAtMs_ = 0UL;
+  unsigned long responseStartedAtMs_ = 0UL;
+  bool responseTimeoutActive_ = false;
+  bool rentReceiptShown_ = false;
 };
 
 }  // namespace firmware

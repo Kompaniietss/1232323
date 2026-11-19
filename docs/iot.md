@@ -4,14 +4,29 @@ This repository keeps the existing TypeScript e-bike rental app as the reference
 
 ## Roles and wiring
 
-- Sensor node: a state-dependent button and USB Serial user terminal. An idle short press requests rent; an idle long press requests return. While awaiting simulated payment, a short press confirms it; after a return receipt, a short press closes the flow. A double press after a rent receipt requests it again.
-- Actuator node: owns the Bike state machine, reservation timeout, low-battery guard, pricing logic, and LED outputs.
+- Sensor node: a state-dependent button and USB Serial user terminal. An idle short press requests rent; an idle long press requests return. After receiving a simulated payment prompt, a short press confirms it; after a return receipt, a short press closes the flow. A double press after a rent receipt requests it again.
+- Actuator node: applies Bike state changes through the generated state machine, and owns pricing logic and LED outputs.
 - Link: the only communication path between the two nodes. It is modeled as a framed UART channel.
 
 USB Serial runs at 115200 baud and is the User terminal for payment prompts and
 receipts. Payment is simulated: no payment provider is contacted or charged.
 The return prompt says this explicitly; a short button press confirms the
-simulation. The double-press window for `rent:m7` is 350 ms.
+simulation. After a rent receipt, a lone short press does nothing; two short
+presses within 350 ms request `rent:m7`. A short press cannot confirm a return
+until the SensorNode has received the payment-request frame.
+
+SensorNode waits up to 2000 ms for each ActuatorNode reply. On timeout it
+returns to Idle, or to RentReceiptAvailable if it has already shown a rent
+receipt, and prints one timeout line on the USB Serial terminal. Waiting for a
+button action (payment confirmation, return close, or the second receipt press)
+does not time out. These are SensorNode flow timeouts; they do not cancel or
+roll back an operation already handled by ActuatorNode.
+
+The reservation-timeout (`t2`) and low-battery (`t7`) transitions are defined
+in the generated `StateMachine` transition table and covered by its tests and
+traces. `ActuatorNode` does not currently drive either transition.
+The SensorNode timeout and gesture decision is recorded in
+[ADR 0005](./adr/0005-sensor-flow-timeouts.md).
 
 The intended Mega wiring is:
 

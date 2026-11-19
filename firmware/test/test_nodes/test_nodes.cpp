@@ -1,5 +1,7 @@
 #include <unity.h>
 
+#include <string.h>
+
 #include "../../lib/domain/Bike.h"
 #include "../../lib/domain/Rental.h"
 #include "../../lib/domain/Station.h"
@@ -102,6 +104,117 @@ void test_rent_messages_drive_reserve_unlock_receipt_and_show_receipt(void) {
   TEST_ASSERT_EQUAL_UINT32(2U, fixture.terminal.receiptCount());
 }
 
+void test_lone_short_press_after_rent_receipt_does_not_restart_rent(void) {
+  Fixture fixture;
+  fixture.press(250UL);
+  fixture.pump();
+
+  fixture.press(250UL);
+  fixture.clock.advance(firmware::SensorNode::kDoublePressWindowMs);
+  fixture.sensor.tick();
+
+  TEST_ASSERT_EQUAL_UINT32(2U, fixture.sensorLink.sentCount());
+  TEST_ASSERT_EQUAL_UINT8(
+      static_cast<uint8_t>(firmware::FrameId::RENT_UNLOCK), fixture.sensorLink.sentId(1U));
+  TEST_ASSERT_EQUAL_UINT32(0U, fixture.terminal.errorCount());
+}
+
+void test_idle_long_press_times_out_then_short_press_can_rent(void) {
+  Fixture fixture;
+  fixture.press(900UL);
+
+  TEST_ASSERT_EQUAL_UINT32(1U, fixture.sensorLink.sentCount());
+  TEST_ASSERT_EQUAL_UINT8(
+      static_cast<uint8_t>(firmware::FrameId::RETURN_REQUEST), fixture.sensorLink.sentId(0U));
+
+  fixture.clock.advance(firmware::SensorNode::kResponseTimeoutMs);
+  fixture.sensor.tick();
+  TEST_ASSERT_EQUAL_UINT32(1U, fixture.terminal.errorCount());
+  TEST_ASSERT_EQUAL_STRING("Actuator response timed out", fixture.terminal.lastError());
+
+  fixture.press(250UL);
+  TEST_ASSERT_EQUAL_UINT32(2U, fixture.sensorLink.sentCount());
+  TEST_ASSERT_EQUAL_UINT8(
+      static_cast<uint8_t>(firmware::FrameId::RENT_REQUEST), fixture.sensorLink.sentId(1U));
+  fixture.pump();
+  TEST_ASSERT_EQUAL(firmware::BikeState::InUse, fixture.bike.state);
+  TEST_ASSERT_EQUAL_UINT32(1U, fixture.terminal.errorCount());
+}
+
+void test_payment_confirmation_without_request_is_ignored(void) {
+  Fixture fixture;
+  fixture.press(900UL);
+  fixture.press(250UL);
+
+  TEST_ASSERT_EQUAL_UINT32(1U, fixture.sensorLink.sentCount());
+  TEST_ASSERT_EQUAL_UINT8(
+      static_cast<uint8_t>(firmware::FrameId::RETURN_REQUEST), fixture.sensorLink.sentId(0U));
+  TEST_ASSERT_EQUAL_UINT32(0U, fixture.terminal.paymentPromptCount());
+}
+
+void test_lost_rent_reply_times_out_and_allows_a_new_request(void) {
+  Fixture fixture;
+  firmware::FakeLink lostReply;
+  uint8_t id = 0U;
+  uint8_t payload[15] = {};
+  unsigned int length = 0U;
+  fixture.actuatorLink.connect(lostReply);
+
+  fixture.press(250UL);
+  fixture.actuator.tick();
+  TEST_ASSERT_EQUAL(firmware::BikeState::Reserved, fixture.bike.state);
+  TEST_ASSERT_TRUE(lostReply.receive(&id, payload, sizeof(payload), &length));
+  TEST_ASSERT_EQUAL_UINT8(
+      static_cast<uint8_t>(firmware::FrameId::RENT_RESERVED), id);
+
+  fixture.clock.advance(firmware::SensorNode::kResponseTimeoutMs);
+  fixture.sensor.tick();
+  TEST_ASSERT_EQUAL_UINT32(1U, fixture.terminal.errorCount());
+
+  fixture.press(250UL);
+  TEST_ASSERT_EQUAL_UINT32(2U, fixture.sensorLink.sentCount());
+  TEST_ASSERT_EQUAL_UINT8(
+      static_cast<uint8_t>(firmware::FrameId::RENT_REQUEST), fixture.sensorLink.sentId(1U));
+}
+
+void test_lost_receipt_display_reply_recovers_receipt_available_flow(void) {
+  Fixture fixture;
+  fixture.press(250UL);
+  fixture.pump();
+
+  firmware::FakeLink lostReply;
+  uint8_t id = 0U;
+  uint8_t payload[15] = {};
+  unsigned int length = 0U;
+  fixture.actuatorLink.connect(lostReply);
+
+  fixture.press(250UL);
+  fixture.clock.advance(firmware::SensorNode::kDoublePressWindowMs);
+  fixture.sensor.tick();
+  fixture.press(250UL);
+  fixture.clock.advance(100UL);
+  fixture.press(250UL);
+  TEST_ASSERT_EQUAL_UINT8(
+      static_cast<uint8_t>(firmware::FrameId::RENT_SHOWRECEIPT),
+      fixture.sensorLink.sentId(2U));
+  fixture.actuator.tick();
+  TEST_ASSERT_TRUE(lostReply.receive(&id, payload, sizeof(payload), &length));
+  TEST_ASSERT_EQUAL_UINT8(
+      static_cast<uint8_t>(firmware::FrameId::RENT_RECEIPT), id);
+
+  fixture.clock.advance(firmware::SensorNode::kResponseTimeoutMs);
+  fixture.sensor.tick();
+  TEST_ASSERT_EQUAL_UINT32(1U, fixture.terminal.errorCount());
+
+  fixture.press(250UL);
+  TEST_ASSERT_EQUAL_UINT32(3U, fixture.sensorLink.sentCount());
+  fixture.clock.advance(100UL);
+  fixture.press(250UL);
+  TEST_ASSERT_EQUAL_UINT8(
+      static_cast<uint8_t>(firmware::FrameId::RENT_SHOWRECEIPT),
+      fixture.sensorLink.sentId(3U));
+}
+
 void test_return_prompts_confirms_receipt_closes_and_replies(void) {
   Fixture fixture;
   fixture.press(250UL);
@@ -120,6 +233,10 @@ void test_return_prompts_confirms_receipt_closes_and_replies(void) {
       static_cast<uint8_t>(firmware::FrameId::RETURN_PAYMENTREQUEST),
       fixture.actuatorLink.sentId(5U));
 
+  fixture.clock.advance(firmware::SensorNode::kResponseTimeoutMs + 1UL);
+  fixture.sensor.tick();
+  TEST_ASSERT_EQUAL_UINT32(0U, fixture.terminal.errorCount());
+
   fixture.press(250UL);
   fixture.actuator.tick();
   fixture.sensor.tick();
@@ -134,6 +251,10 @@ void test_return_prompts_confirms_receipt_closes_and_replies(void) {
       static_cast<uint8_t>(firmware::FrameId::RETURN_AVAILABLE), fixture.actuatorLink.sentId(6U));
   TEST_ASSERT_EQUAL_UINT8(
       static_cast<uint8_t>(firmware::FrameId::RETURN_RECEIPT), fixture.actuatorLink.sentId(7U));
+
+  fixture.clock.advance(firmware::SensorNode::kResponseTimeoutMs + 1UL);
+  fixture.sensor.tick();
+  TEST_ASSERT_EQUAL_UINT32(0U, fixture.terminal.errorCount());
 
   fixture.press(250UL);
   fixture.actuator.tick();
@@ -150,6 +271,11 @@ void test_return_prompts_confirms_receipt_closes_and_replies(void) {
 int main(void) {
   UNITY_BEGIN();
   RUN_TEST(test_rent_messages_drive_reserve_unlock_receipt_and_show_receipt);
+  RUN_TEST(test_lone_short_press_after_rent_receipt_does_not_restart_rent);
+  RUN_TEST(test_idle_long_press_times_out_then_short_press_can_rent);
+  RUN_TEST(test_payment_confirmation_without_request_is_ignored);
+  RUN_TEST(test_lost_rent_reply_times_out_and_allows_a_new_request);
+  RUN_TEST(test_lost_receipt_display_reply_recovers_receipt_available_flow);
   RUN_TEST(test_return_prompts_confirms_receipt_closes_and_replies);
   return UNITY_END();
 }
