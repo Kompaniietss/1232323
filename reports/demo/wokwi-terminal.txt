@@ -1,0 +1,4 @@
+Receipt (simulated payment): EUR 1.00
+Receipt (simulated payment): EUR 1.00
+Payment due (simulated): EUR 1.15. Short press to confirm.
+Receipt (simulated payment): EUR 1.15

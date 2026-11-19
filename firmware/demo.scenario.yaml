@@ -1,0 +1,29 @@
+name: 'Rent and return demo'
+version: 1
+author: 'iot'
+steps:
+  - delay: 1000ms
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - delay: 100ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - delay: 1500ms
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - delay: 100ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - delay: 150ms
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - delay: 100ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - delay: 1500ms
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - delay: 1000ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - delay: 1500ms
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - delay: 100ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - delay: 1500ms
+  - set-control: { part-id: btn1, control: pressed, value: 1 }
+  - delay: 100ms
+  - set-control: { part-id: btn1, control: pressed, value: 0 }
+  - delay: 1500ms
