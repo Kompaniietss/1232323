@@ -20,12 +20,15 @@ const compareText = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 
 export async function loadModel(root) {
   const modelDir = path.join(root, 'model');
-  const [classes, stateMachine, sequences, protocol] = await Promise.all([
+  const [classes, stateMachine, sequences, protocol, umlSequences, umlMapping] = await Promise.all([
     readFile(path.join(modelDir, 'classes.json'), 'utf8').then(JSON.parse),
     readFile(path.join(modelDir, 'bike.statemachine.json'), 'utf8').then(JSON.parse),
     readFile(path.join(modelDir, 'sequences.json'), 'utf8').then(JSON.parse),
     readFile(path.join(modelDir, 'protocol.json'), 'utf8').then(JSON.parse),
+    readFile(path.join(modelDir, 'uml-sequences.json'), 'utf8').then(JSON.parse),
+    readFile(path.join(modelDir, 'uml-mapping.json'), 'utf8').then(JSON.parse),
   ]);
+  validateUmlMapping(umlSequences, umlMapping);
   const elements = [];
   const add = (category, id) => elements.push({ category, id });
 
@@ -52,7 +55,80 @@ export async function loadModel(root) {
 
   const ordered = elements.sort((left, right) => compareText(left.id, right.id));
   const byId = new Map(ordered.map((element) => [element.id, element]));
-  return { elements: ordered, byId, classes, stateMachine, sequences, protocol, relationships: classes.relationships };
+  return {
+    elements: ordered,
+    byId,
+    classes,
+    stateMachine,
+    sequences,
+    protocol,
+    umlSequences,
+    umlMapping,
+    relationships: classes.relationships,
+  };
+}
+
+function validateUmlMapping(umlSequences, umlMapping) {
+  const expectedFlows = ['rent', 'return'];
+  const sequenceFlows = Object.keys(umlSequences).sort(compareText);
+  const mappingFlows = Object.keys(umlMapping).sort(compareText);
+  if (sequenceFlows.join(',') !== expectedFlows.join(',') ||
+      mappingFlows.join(',') !== expectedFlows.join(',')) {
+    throw new Error('UML sequence and mapping must contain exactly the rent and return flows');
+  }
+
+  for (const flow of sequenceFlows) {
+    const messages = umlSequences[flow];
+    const mappings = umlMapping[flow];
+    const expectedLength = flow === 'rent' ? 8 : 9;
+    const participants = new Set(['User', 'App', 'Station', 'Bike', 'Rental', 'PaymentService']);
+    if (!Array.isArray(messages) || messages.length !== expectedLength ||
+        !Array.isArray(mappings) || messages.length !== mappings.length) {
+      throw new Error(`UML mapping for ${flow} must contain one entry per sequence message`);
+    }
+
+    const messageIds = new Set();
+    messages.forEach((message, index) => {
+      const mapping = mappings[index];
+      if (!message || message.id !== `m${index}` ||
+          !participants.has(message.from) || !participants.has(message.to) ||
+          typeof message.message !== 'string' || !message.message ||
+          messageIds.has(message.id)) {
+        throw new Error(`UML sequence ${flow} contains an invalid or duplicate message`);
+      }
+      messageIds.add(message.id);
+      if (!mapping || mapping.id !== message.id) {
+        throw new Error(`UML mapping for ${flow} is missing, duplicating, or reordering ${message.id}`);
+      }
+
+      if (mapping.status === 'aligned') {
+        if (typeof mapping.firmware !== 'string' || !mapping.firmware.trim() ||
+            Object.hasOwn(mapping, 'reason') ||
+            Object.keys(mapping).some((key) => !['id', 'status', 'firmware'].includes(key))) {
+          throw new Error(`Aligned UML mapping ${flow}:${message.id} requires only a named firmware reference`);
+        }
+      } else if (mapping.status === 'deviated' || mapping.status === 'unmapped') {
+        if (typeof mapping.reason !== 'string' || !mapping.reason.trim() ||
+            /[\r\n]/.test(mapping.reason)) {
+          throw new Error(`Non-aligned UML mapping ${flow}:${message.id} requires a one-line reason`);
+        }
+        if (mapping.status === 'deviated' &&
+            (typeof mapping.firmware !== 'string' || !mapping.firmware.trim() ||
+             Object.keys(mapping).some((key) => !['id', 'status', 'firmware', 'reason'].includes(key)))) {
+          throw new Error(`Deviated UML mapping ${flow}:${message.id} requires a named firmware counterpart`);
+        }
+        if (mapping.status === 'unmapped' && Object.hasOwn(mapping, 'firmware')) {
+          throw new Error(`Unmapped UML mapping ${flow}:${message.id} must not claim a firmware counterpart`);
+        }
+        if (mapping.status === 'unmapped' &&
+            Object.keys(mapping).some((key) => !['id', 'status', 'reason'].includes(key))) {
+          throw new Error(`Unmapped UML mapping ${flow}:${message.id} contains unsupported fields`);
+        }
+      } else {
+        throw new Error(`UML mapping ${flow}:${message.id} has an invalid status`);
+      }
+    });
+  }
 }
 
 export function sortObjectKeys(value) {
@@ -226,12 +302,49 @@ export function summarizeModel(catalog, extracted) {
     .sort((left, right) => compareText(left.id, right.id));
   const total = catalog.elements.length;
   const matched = catalog.elements.length - missing.length;
+  const umlCounts = { aligned: 0, deviated: 0, unmapped: 0 };
+  const nonAligned = [];
+  for (const [flow, messages] of Object.entries(catalog.umlSequences)) {
+    const mappings = catalog.umlMapping[flow];
+    messages.forEach((message, index) => {
+      const mapping = mappings[index];
+      umlCounts[mapping.status] += 1;
+      if (mapping.status !== 'aligned') {
+        nonAligned.push({
+          flow,
+          ...message,
+          status: mapping.status,
+          ...(mapping.firmware ? { firmware: mapping.firmware } : {}),
+          reason: mapping.reason,
+        });
+      }
+    });
+  }
+  const umlTotal = Object.values(umlCounts).reduce((sum, count) => sum + count, 0);
+  const umlConformance = {
+    total: umlTotal,
+    aligned: {
+      count: umlCounts.aligned,
+      pct: Number((100 * umlCounts.aligned / umlTotal).toFixed(2)),
+    },
+    deviated: {
+      count: umlCounts.deviated,
+      pct: Number((100 * umlCounts.deviated / umlTotal).toFixed(2)),
+    },
+    unmapped: {
+      count: umlCounts.unmapped,
+      pct: Number((100 * umlCounts.unmapped / umlTotal).toFixed(2)),
+    },
+    nonAligned,
+  };
   return {
     total,
     matched,
     gap_pct: Number((100 * (1 - matched / total)).toFixed(2)),
+    gapVsIotModel: Number((100 * (1 - matched / total)).toFixed(2)),
     breakdown,
     missing,
     extra,
+    umlConformance,
   };
 }

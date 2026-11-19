@@ -1,0 +1,100 @@
+{
+  "rent": [
+    {
+      "id": "m0",
+      "status": "deviated",
+      "firmware": "SensorNode::handlePress() -> RENT_REQUEST",
+      "reason": "A button requests a rent without selecting a bikeId through an App."
+    },
+    {
+      "id": "m1",
+      "status": "deviated",
+      "firmware": "ActuatorNode::handleFrame(RENT_REQUEST)",
+      "reason": "Firmware checks bike state inside rent-request handling; it has no checkAvailable() message."
+    },
+    {
+      "id": "m2",
+      "status": "deviated",
+      "firmware": "ActuatorNode::sendRentReserved() -> RENT_RESERVED",
+      "reason": "Firmware replies reserved after adding a reservation, rather than replying Available."
+    },
+    {
+      "id": "m3",
+      "status": "aligned",
+      "firmware": "ActuatorNode::reserveBike() -> Station::releaseBike()"
+    },
+    {
+      "id": "m4",
+      "status": "deviated",
+      "firmware": "SensorNode sends RENT_UNLOCK; ActuatorNode::unlockBike()",
+      "reason": "Firmware sends an unlock frame from SensorNode to ActuatorNode instead of Station to Bike."
+    },
+    {
+      "id": "m5",
+      "status": "aligned",
+      "firmware": "ActuatorNode::handleFrame(RENT_UNLOCK) -> Rental::start()"
+    },
+    {
+      "id": "m6",
+      "status": "deviated",
+      "firmware": "ActuatorNode::sendRentStarted() -> RENT_STARTED",
+      "reason": "Firmware emits the started frame from ActuatorNode, not Rental to App."
+    },
+    {
+      "id": "m7",
+      "status": "unmapped",
+      "reason": "Firmware does not show the user an unlocked or ride-started message."
+    }
+  ],
+  "return": [
+    {
+      "id": "m0",
+      "status": "deviated",
+      "firmware": "SensorNode::handlePress() -> RETURN_REQUEST",
+      "reason": "A long button press requests return; firmware has no App message named returnBike()."
+    },
+    {
+      "id": "m1",
+      "status": "aligned",
+      "firmware": "ActuatorNode::handleFrame(RETURN_REQUEST) -> Station::dockBike()"
+    },
+    {
+      "id": "m2",
+      "status": "deviated",
+      "firmware": "ActuatorNode::lockReturnedBike() -> Bike::lock()",
+      "reason": "Firmware locks only after simulated payment confirmation, not directly after docking."
+    },
+    {
+      "id": "m3",
+      "status": "aligned",
+      "firmware": "ActuatorNode::sendReturnDocked() -> RETURN_DOCKED"
+    },
+    {
+      "id": "m4",
+      "status": "deviated",
+      "firmware": "ActuatorNode::handleFrame(RETURN_CONFIRMPAYMENT) -> Rental::end()",
+      "reason": "Firmware calls Rental::end() after simulated payment confirmation, while UML ends the rental before charging."
+    },
+    {
+      "id": "m5",
+      "status": "unmapped",
+      "reason": "Mega firmware has no PaymentService and performs no charge; payment is simulated."
+    },
+    {
+      "id": "m6",
+      "status": "unmapped",
+      "reason": "Mega firmware has no PaymentService reply; a button simulates confirmation instead."
+    },
+    {
+      "id": "m7",
+      "status": "deviated",
+      "firmware": "ActuatorNode::sendReturnReceipt() -> RETURN_RECEIPT",
+      "reason": "Firmware emits the receipt from ActuatorNode to SensorNode, rather than from Rental to App."
+    },
+    {
+      "id": "m8",
+      "status": "aligned",
+      "firmware": "SensorNode::handleFrame(RETURN_RECEIPT) -> IUserTerminal::showReceipt()"
+    }
+  ]
+}

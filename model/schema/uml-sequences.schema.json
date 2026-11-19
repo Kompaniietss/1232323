@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UML sequence messages from specification sections 6.1 and 6.2",
+  "type": "object",
+  "required": ["rent", "return"],
+  "additionalProperties": false,
+  "properties": {
+    "rent": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/rentMessage" }
+    },
+    "return": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": { "$ref": "#/$defs/returnMessage" }
+    }
+  },
+  "$defs": {
+    "message": {
+      "type": "object",
+      "required": ["id", "from", "to", "message"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^m[0-8]$" },
+        "from": {
+          "type": "string",
+          "enum": ["User", "App", "Station", "Bike", "Rental", "PaymentService"]
+        },
+        "to": {
+          "type": "string",
+          "enum": ["User", "App", "Station", "Bike", "Rental", "PaymentService"]
+        },
+        "message": { "type": "string", "minLength": 1 }
+      }
+    },
+    "rentMessage": {
+      "allOf": [
+        { "$ref": "#/$defs/message" },
+        { "properties": { "id": { "pattern": "^m[0-7]$" } } }
+      ]
+    },
+    "returnMessage": {
+      "allOf": [
+        { "$ref": "#/$defs/message" },
+        { "properties": { "id": { "pattern": "^m[0-8]$" } } }
+      ]
+    }
+  }
+}

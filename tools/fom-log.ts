@@ -18,9 +18,11 @@ const columns = [
   'flash_bytes',
   'ram_bytes',
   'transition_us',
+  'uml_seq_aligned_pct',
   'notes',
 ];
-const legacyColumns = columns.slice(0, -1);
+const previousColumns = [...columns.slice(0, -2), 'notes'];
+const legacyColumns = columns.slice(0, -2);
 type CsvRow = string[];
 
 function run(command: string, args: string[], cwd = root) {
@@ -289,8 +291,9 @@ async function loadExistingRows(): Promise<CsvRow[]> {
   const rows = parseCsv(text.replace(/^\uFEFF/, ''));
   if (rows.length === 0) return [];
   const header = rows.shift()!;
+  const isPreviousHeader = header.join(',') === previousColumns.join(',');
   const isLegacyHeader = header.join(',') === legacyColumns.join(',');
-  if (!isLegacyHeader && header.join(',') !== columns.join(',')) {
+  if (!isLegacyHeader && !isPreviousHeader && header.join(',') !== columns.join(',')) {
     throw new Error('reports/fom.csv has an unexpected header');
   }
 
@@ -298,7 +301,8 @@ async function loadExistingRows(): Promise<CsvRow[]> {
     if (row.length !== header.length) {
       throw new Error('reports/fom.csv contains a row with an unexpected number of columns');
     }
-    return isLegacyHeader ? [...row, ''] : row;
+    if (isPreviousHeader) return [...row.slice(0, -1), '', row[row.length - 1]!];
+    return isLegacyHeader ? [...row, '', ''] : row;
   });
 }
 
@@ -376,7 +380,7 @@ async function baseline(flags: Map<string, string>): Promise<void> {
   const matchingRows = rows.filter((row) => row[0] === commit);
   if (matchingRows.length > 1) throw new Error(`reports/fom.csv contains duplicate rows for ${commit}`);
   const remainingRows = rows.filter((row) => row[0] !== commit);
-  const row = [commit, dateMatch[1]!, buildOk, gap, '', '', '', '', '', '', notes];
+  const row = [commit, dateMatch[1]!, buildOk, gap, '', '', '', '', '', '', '', notes];
   await writeRows([...remainingRows, row]);
   console.log(serializeCsv([row]).trimEnd());
 }
@@ -393,9 +397,18 @@ async function recordCurrentCheckout(): Promise<void> {
   runChecked(process.execPath, [path.join(root, 'tools', 'verify-model.mjs')], 'Model verification');
   const verification = JSON.parse(
     await readFile(path.join(reportsDir, 'model-verification.json'), 'utf8'),
-  ) as { gap_pct?: unknown };
+  ) as {
+    gap_pct?: unknown;
+    umlConformance?: { aligned?: { pct?: unknown } };
+  };
   if (typeof verification.gap_pct !== 'number' || !Number.isFinite(verification.gap_pct)) {
     throw new Error('reports/model-verification.json does not contain a numeric gap_pct');
+  }
+  const alignedPct = verification.umlConformance?.aligned?.pct;
+  if (alignedPct !== undefined &&
+      (typeof alignedPct !== 'number' || !Number.isFinite(alignedPct) ||
+       alignedPct < 0 || alignedPct > 100)) {
+    throw new Error('reports/model-verification.json contains an invalid UML aligned percentage');
   }
 
   const build = runBuild();
@@ -428,6 +441,7 @@ async function recordCurrentCheckout(): Promise<void> {
     buildOk ? parseBuildMemory(build.output, 'Flash') : '',
     buildOk ? parseBuildMemory(build.output, 'RAM') : '',
     benchmark.transitionUs,
+    alignedPct === undefined ? '' : String(alignedPct),
     notes,
   ];
 

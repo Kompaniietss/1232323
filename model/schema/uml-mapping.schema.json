@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Firmware mapping of specification UML sequence messages",
+  "type": "object",
+  "required": ["rent", "return"],
+  "additionalProperties": false,
+  "properties": {
+    "rent": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/mapping" }
+    },
+    "return": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": { "$ref": "#/$defs/mapping" }
+    }
+  },
+  "$defs": {
+    "mapping": {
+      "oneOf": [
+        { "$ref": "#/$defs/aligned" },
+        { "$ref": "#/$defs/deviated" },
+        { "$ref": "#/$defs/unmapped" }
+      ]
+    },
+    "aligned": {
+      "type": "object",
+      "required": ["id", "status", "firmware"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^m[0-8]$" },
+        "status": { "const": "aligned" },
+        "firmware": { "type": "string", "minLength": 1 }
+      }
+    },
+    "deviated": {
+      "type": "object",
+      "required": ["id", "status", "firmware", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^m[0-8]$" },
+        "status": { "const": "deviated" },
+        "firmware": { "type": "string", "minLength": 1 },
+        "reason": { "$ref": "#/$defs/reason" }
+      }
+    },
+    "unmapped": {
+      "type": "object",
+      "required": ["id", "status", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^m[0-8]$" },
+        "status": { "const": "unmapped" },
+        "reason": { "$ref": "#/$defs/reason" }
+      }
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\r\\n]+$"
+    }
+  }
+}

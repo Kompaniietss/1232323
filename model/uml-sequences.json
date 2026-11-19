@@ -1,0 +1,23 @@
+{
+  "rent": [
+    { "id": "m0", "from": "User", "to": "App", "message": "selectBike(bikeId)" },
+    { "id": "m1", "from": "App", "to": "Bike", "message": "checkAvailable()" },
+    { "id": "m2", "from": "Bike", "to": "App", "message": "Available" },
+    { "id": "m3", "from": "App", "to": "Station", "message": "releaseBike()" },
+    { "id": "m4", "from": "Station", "to": "Bike", "message": "unlock()" },
+    { "id": "m5", "from": "App", "to": "Rental", "message": "start()" },
+    { "id": "m6", "from": "Rental", "to": "App", "message": "rental started" },
+    { "id": "m7", "from": "App", "to": "User", "message": "unlocked, ride started" }
+  ],
+  "return": [
+    { "id": "m0", "from": "User", "to": "App", "message": "returnBike()" },
+    { "id": "m1", "from": "App", "to": "Station", "message": "dockBike(bike)" },
+    { "id": "m2", "from": "Station", "to": "Bike", "message": "lock()" },
+    { "id": "m3", "from": "Station", "to": "App", "message": "docked" },
+    { "id": "m4", "from": "App", "to": "Rental", "message": "end()" },
+    { "id": "m5", "from": "Rental", "to": "PaymentService", "message": "charge(cost)" },
+    { "id": "m6", "from": "PaymentService", "to": "Rental", "message": "paid" },
+    { "id": "m7", "from": "Rental", "to": "App", "message": "cost + receipt" },
+    { "id": "m8", "from": "App", "to": "User", "message": "show receipt" }
+  ]
+}

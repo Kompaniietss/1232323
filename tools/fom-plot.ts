@@ -16,6 +16,7 @@ const columns = [
   'flash_bytes',
   'ram_bytes',
   'transition_us',
+  'uml_seq_aligned_pct',
   'notes',
 ];
 type Panel = { x: number; y: number; width: number; height: number };
