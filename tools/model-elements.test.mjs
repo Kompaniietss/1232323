@@ -21,12 +21,12 @@ test('reports UML sequence conformance independently from the IoT model gap', as
     ),
     {
       total: 17,
-      aligned: { count: 5, pct: 29.41 },
-      deviated: { count: 9, pct: 52.94 },
+      aligned: { count: 4, pct: 23.53 },
+      deviated: { count: 10, pct: 58.82 },
       unmapped: { count: 3, pct: 17.65 },
     },
   );
-  assert.equal(report.umlConformance.nonAligned.length, 12);
+  assert.equal(report.umlConformance.nonAligned.length, 13);
   assert.equal(
     report.umlConformance.nonAligned.some(
       (message) =>
@@ -34,4 +34,19 @@ test('reports UML sequence conformance independently from the IoT model gap', as
     ),
     true,
   );
+  assert.equal(report.umlConformance.extras.length, 6);
+  assert.deepEqual(
+    report.umlConformance.extras
+      .filter((extra) => extra.type === 'unconsumedFrame')
+      .map((extra) => extra.id),
+    [
+      'unconsumed-frame:RENT_STARTED',
+      'unconsumed-frame:RENT_ACTIVE',
+      'unconsumed-frame:RETURN_AVAILABLE',
+      'unconsumed-frame:RETURN_DOCKED',
+    ],
+  );
+  const docked = catalog.umlMapping.return.find((mapping) => mapping.id === 'm3');
+  assert.equal(docked.status, 'deviated');
+  assert.match(docked.reason, /SensorNode never handles that frame/);
 });

@@ -44,13 +44,55 @@
   "total": 69,
   "umlConformance": {
     "aligned": {
-      "count": 5,
-      "pct": 29.41
+      "count": 4,
+      "pct": 23.53
     },
     "deviated": {
-      "count": 9,
-      "pct": 52.94
+      "count": 10,
+      "pct": 58.82
     },
+    "extras": [
+      {
+        "behavior": "Rent receipt displayed over the user terminal",
+        "firmware": "ActuatorNode::sendRentReceipt() -> RENT_RECEIPT; SensorNode::handleFrame() -> showReceipt()",
+        "id": "rent-receipt",
+        "reason": "The UML rent flow has no receipt message."
+      },
+      {
+        "behavior": "Double-press gesture requests the rent receipt again",
+        "firmware": "SensorNode::handlePress() -> RENT_SHOWRECEIPT; ActuatorNode::sendRentReceipt()",
+        "id": "rent-show-receipt-gesture",
+        "reason": "The UML rent flow has no double-press gesture or receipt-display request."
+      },
+      {
+        "behavior": "RENT_STARTED frame is sent but not consumed",
+        "firmware": "ActuatorNode::sendRentStarted() -> SensorNode::handleFrame()",
+        "id": "unconsumed-frame:RENT_STARTED",
+        "reason": "SensorNode has no RENT_STARTED handler; the received frame is ignored.",
+        "type": "unconsumedFrame"
+      },
+      {
+        "behavior": "RENT_ACTIVE frame is sent but not consumed",
+        "firmware": "ActuatorNode::sendRentActive() -> SensorNode::handleFrame()",
+        "id": "unconsumed-frame:RENT_ACTIVE",
+        "reason": "SensorNode has no RENT_ACTIVE handler; the received frame is ignored.",
+        "type": "unconsumedFrame"
+      },
+      {
+        "behavior": "RETURN_AVAILABLE frame is sent but not consumed",
+        "firmware": "ActuatorNode::sendReturnAvailable() -> SensorNode::handleFrame()",
+        "id": "unconsumed-frame:RETURN_AVAILABLE",
+        "reason": "SensorNode has no RETURN_AVAILABLE handler; the received frame is ignored.",
+        "type": "unconsumedFrame"
+      },
+      {
+        "behavior": "RETURN_DOCKED frame is sent but not consumed",
+        "firmware": "ActuatorNode::sendReturnDocked() -> SensorNode::handleFrame()",
+        "id": "unconsumed-frame:RETURN_DOCKED",
+        "reason": "SensorNode has no RETURN_DOCKED handler; the received frame is ignored.",
+        "type": "unconsumedFrame"
+      }
+    ],
     "nonAligned": [
       {
         "firmware": "SensorNode::handlePress() -> RENT_REQUEST",
@@ -130,6 +172,16 @@
         "reason": "Firmware locks only after simulated payment confirmation, not directly after docking.",
         "status": "deviated",
         "to": "Bike"
+      },
+      {
+        "firmware": "ActuatorNode::sendReturnDocked() -> RETURN_DOCKED",
+        "flow": "return",
+        "from": "Station",
+        "id": "m3",
+        "message": "docked",
+        "reason": "ActuatorNode sends RETURN_DOCKED, but SensorNode never handles that frame.",
+        "status": "deviated",
+        "to": "App"
       },
       {
         "firmware": "ActuatorNode::handleFrame(RETURN_CONFIRMPAYMENT) -> Rental::end()",

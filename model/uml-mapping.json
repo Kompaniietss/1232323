@@ -66,8 +66,9 @@
     },
     {
       "id": "m3",
-      "status": "aligned",
-      "firmware": "ActuatorNode::sendReturnDocked() -> RETURN_DOCKED"
+      "status": "deviated",
+      "firmware": "ActuatorNode::sendReturnDocked() -> RETURN_DOCKED",
+      "reason": "ActuatorNode sends RETURN_DOCKED, but SensorNode never handles that frame."
     },
     {
       "id": "m4",

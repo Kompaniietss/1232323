@@ -336,6 +336,48 @@ export function summarizeModel(catalog, extracted) {
       pct: Number((100 * umlCounts.unmapped / umlTotal).toFixed(2)),
     },
     nonAligned,
+    extras: [
+      {
+        id: 'rent-receipt',
+        behavior: 'Rent receipt displayed over the user terminal',
+        firmware: 'ActuatorNode::sendRentReceipt() -> RENT_RECEIPT; SensorNode::handleFrame() -> showReceipt()',
+        reason: 'The UML rent flow has no receipt message.',
+      },
+      {
+        id: 'rent-show-receipt-gesture',
+        behavior: 'Double-press gesture requests the rent receipt again',
+        firmware: 'SensorNode::handlePress() -> RENT_SHOWRECEIPT; ActuatorNode::sendRentReceipt()',
+        reason: 'The UML rent flow has no double-press gesture or receipt-display request.',
+      },
+      {
+        id: 'unconsumed-frame:RENT_STARTED',
+        type: 'unconsumedFrame',
+        behavior: 'RENT_STARTED frame is sent but not consumed',
+        firmware: 'ActuatorNode::sendRentStarted() -> SensorNode::handleFrame()',
+        reason: 'SensorNode has no RENT_STARTED handler; the received frame is ignored.',
+      },
+      {
+        id: 'unconsumed-frame:RENT_ACTIVE',
+        type: 'unconsumedFrame',
+        behavior: 'RENT_ACTIVE frame is sent but not consumed',
+        firmware: 'ActuatorNode::sendRentActive() -> SensorNode::handleFrame()',
+        reason: 'SensorNode has no RENT_ACTIVE handler; the received frame is ignored.',
+      },
+      {
+        id: 'unconsumed-frame:RETURN_AVAILABLE',
+        type: 'unconsumedFrame',
+        behavior: 'RETURN_AVAILABLE frame is sent but not consumed',
+        firmware: 'ActuatorNode::sendReturnAvailable() -> SensorNode::handleFrame()',
+        reason: 'SensorNode has no RETURN_AVAILABLE handler; the received frame is ignored.',
+      },
+      {
+        id: 'unconsumed-frame:RETURN_DOCKED',
+        type: 'unconsumedFrame',
+        behavior: 'RETURN_DOCKED frame is sent but not consumed',
+        firmware: 'ActuatorNode::sendReturnDocked() -> SensorNode::handleFrame()',
+        reason: 'SensorNode has no RETURN_DOCKED handler; the received frame is ignored.',
+      },
+    ],
   };
   return {
     total,

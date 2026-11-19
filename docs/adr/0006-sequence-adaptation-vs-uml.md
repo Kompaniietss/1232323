@@ -42,6 +42,16 @@ they are not folded into the existing IoT-model gap.
   The Sensor handles the button and user terminal; the Actuator handles bike,
   station, and rental operations. This is an implementation adaptation, not a
   UML participant rename or proof of alignment by itself.
+- `return:m3` (`docked`) is deviated: `ActuatorNode` sends `RETURN_DOCKED`, but
+  `SensorNode` has no handler for that frame. The same send-without-consumer
+  evidence applies to `RENT_STARTED`, `RENT_ACTIVE`, and `RETURN_AVAILABLE`.
+  No other mapping statuses were changed: `RENT_STARTED` is already part of
+  the deviated `rent:m6` mapping, and the other frames have no standalone UML
+  messages to reclassify.
+- The firmware displays a rent receipt and supports a double-press
+  show-receipt gesture, neither of which has a counterpart in the UML rent
+  flow. The report's `umlConformance.extras` also lists the unconsumed frames
+  `RENT_STARTED`, `RENT_ACTIVE`, `RETURN_AVAILABLE`, and `RETURN_DOCKED`.
 - Other message-level differences and unmapped user-visible rent feedback are
   listed in the generated `umlConformance.nonAligned` report.
 
