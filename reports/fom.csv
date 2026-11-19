@@ -1,9 +1,10 @@
-commit,date,mega_build_ok,gap_pct,tests_pass,tests_total,trace_diffs,flash_bytes,ram_bytes,transition_us,notes
-4a36559,2026-11-09,0,78.57,,,,,,,baseline: Initial commit; enum BikeState defined twice; gap measured by running the new verifier on that tree in a git worktree
-fea87d7,2026-11-10,1,31.43,,,,6236,731,,
-f536566,2026-11-16,1,31.43,18,18,,6236,731,,
-2dac28c,2026-11-17,1,31.43,18,18,,6236,731,,
-a45326d,2026-11-17,1,24.64,23,23,,6236,731,,model total 69 (was 70): User.constructor removed per ADR 0003
-3ac8af4,2026-11-17,1,21.74,25,25,0,6368,765,,
-d8c4994,2026-11-17,1,0,27,27,0,9282,943,,
-dcf1bf9,2026-11-18,1,0,27,27,0,9282,943,2.74,bench: Wokwi simulator
+commit,date,mega_build_ok,gap_pct,tests_pass,tests_total,trace_diffs,flash_bytes,ram_bytes,transition_us,uml_seq_aligned_pct,notes
+4a36559,2026-11-09,0,78.57,,,,,,,,baseline: Initial commit; enum BikeState defined twice; gap measured by running the new verifier on that tree in a git worktree
+fea87d7,2026-11-10,1,31.43,,,,6236,731,,,
+f536566,2026-11-16,1,31.43,18,18,,6236,731,,,
+2dac28c,2026-11-17,1,31.43,18,18,,6236,731,,,
+a45326d,2026-11-17,1,24.64,23,23,,6236,731,,,model total 69 (was 70): User.constructor removed per ADR 0003
+3ac8af4,2026-11-17,1,21.74,25,25,0,6368,765,,,
+d8c4994,2026-11-17,1,0,27,27,0,9282,943,,,
+dcf1bf9,2026-11-18,1,0,27,27,0,9282,943,2.74,,bench: Wokwi simulator
+4a0db66,2026-11-19,1,0,27,27,0,9282,943,2.74,29.41,bench: Wokwi simulator
